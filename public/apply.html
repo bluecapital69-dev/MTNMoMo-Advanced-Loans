@@ -38,7 +38,6 @@
     align-items:center;
   }
 
-  /* ============ BLUE FRAME LINES ============ */
   .frame-top, .frame-bottom{
     width:100%;
     height:6px;
@@ -46,7 +45,6 @@
   }
   .frame-bottom{margin-top:auto;}
 
-  /* ============ HEADER (blue bar, "MTN.") ============ */
   .header{
     width:100%;
     background:var(--mtn-blue-deep);
@@ -60,23 +58,19 @@
     display:flex;align-items:center;justify-content:center;
   }
 
-  .brand{
-    display:flex;align-items:center;text-decoration:none;
-  }
+  .brand{display:flex;align-items:center;text-decoration:none;}
   .brand strong{
     font-size:26px;font-weight:900;color:#FFFFFF;
     letter-spacing:2px;text-transform:uppercase;
   }
   .brand strong em{font-style:normal;color:var(--mtn-yellow);}
 
-  /* ============ MAIN ============ */
   main{
     width:100%;max-width:920px;flex:1;
     padding:44px 20px 60px;
     display:flex;flex-direction:column;align-items:center;
   }
 
-  /* ============ CARD ============ */
   .card{
     background:var(--card);
     width:100%;max-width:480px;
@@ -87,7 +81,6 @@
     border-top:4px solid var(--mtn-blue-deep);
   }
 
-  /* ---- LOAN RECAP (page starts here) ---- */
   .recap{
     background:#F5F8FC;
     border:1px solid #DCE8F5;
@@ -108,7 +101,6 @@
   }
   .recap .right{text-align:right;}
 
-  /* ---- FORM ---- */
   .form-group{margin-bottom:20px;}
 
   .form-group label{
@@ -157,7 +149,6 @@
     margin-top:7px;font-weight:500;line-height:1.5;
   }
 
-  /* ---- CHECKBOX ---- */
   .agree{
     display:flex;
     gap:11px;
@@ -181,7 +172,6 @@
   }
   .agree label strong{color:var(--mtn-blue-deep);}
 
-  /* ---- BUTTONS ---- */
   .btn-row{display:flex;gap:12px;}
 
   .btn-back{
@@ -226,7 +216,21 @@
     stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
   }
 
-  /* ============ MOBILE ============ */
+  /* ---- ERROR BANNER ---- */
+  .error-banner{
+    display:none;
+    background:#FEF2F2;
+    border:1px solid #FCA5A5;
+    color:var(--red);
+    font-size:12.5px;
+    font-weight:600;
+    border-radius:11px;
+    padding:12px 14px;
+    margin-bottom:18px;
+    line-height:1.5;
+  }
+  .error-banner.show{display:block;}
+
   @media(max-width:640px){
     .card{padding:26px 20px 28px;}
     main{padding:28px 16px 44px;}
@@ -238,10 +242,8 @@
 </head>
 <body>
 
-  <!-- TOP BLUE FRAME -->
   <div class="frame-top"></div>
 
-  <!-- HEADER -->
   <header class="header">
     <div class="header-inner">
       <a class="brand" href="index.html">
@@ -250,12 +252,10 @@
     </div>
   </header>
 
-  <!-- MAIN -->
   <main>
 
     <div class="card">
 
-      <!-- LOAN RECAP -->
       <div class="recap">
         <div>
           <div class="label">You're borrowing</div>
@@ -267,15 +267,15 @@
         </div>
       </div>
 
+      <div class="error-banner" id="errorBanner"></div>
+
       <form id="applyForm" onsubmit="submitForm(event)">
 
-        <!-- FULL NAME -->
         <div class="form-group">
           <label for="fullName">Full name</label>
           <input type="text" id="fullName" placeholder="e.g. Amina Ngo Bakang" required>
         </div>
 
-        <!-- PHONE -->
         <div class="form-group">
           <label for="phone">MTN MoMo number</label>
           <div class="phone-wrap">
@@ -285,14 +285,12 @@
           <p class="hint">Must be the number registered to your MTN MoMo wallet.</p>
         </div>
 
-        <!-- ID NUMBER -->
         <div class="form-group">
           <label for="idNumber">National ID number</label>
           <input type="text" id="idNumber" placeholder="e.g. 1234567890" required>
           <p class="hint">Used for identity verification only. Never shared.</p>
         </div>
 
-        <!-- MONTHLY INCOME (optional) -->
         <div class="form-group">
           <label for="income">Monthly income (optional)</label>
           <select id="income">
@@ -305,7 +303,6 @@
           </select>
         </div>
 
-        <!-- AGREE -->
         <div class="agree">
           <input type="checkbox" id="agree" required>
           <label for="agree">
@@ -313,7 +310,6 @@
           </label>
         </div>
 
-        <!-- BUTTONS -->
         <div class="btn-row">
           <a href="index.html" class="btn-back">← Back</a>
           <button type="submit" class="cta" id="submitBtn">Submit Application →</button>
@@ -329,7 +325,6 @@
 
   </main>
 
-  <!-- BOTTOM BLUE FRAME -->
   <div class="frame-bottom"></div>
 
 <script>
@@ -345,33 +340,53 @@
     months + (months === 1 ? ' month' : ' months');
 
   // ----- FORM SUBMIT -----
-  function submitForm(e){
+  async function submitForm(e){
     e.preventDefault();
 
-    const btn = document.getElementById('submitBtn');
+    const btn    = document.getElementById('submitBtn');
+    const banner = document.getElementById('errorBanner');
+    banner.classList.remove('show');
+
     btn.disabled = true;
     btn.textContent = 'Submitting…';
 
-    setTimeout(() => {
-      const payload = {
-        fullName: document.getElementById('fullName').value.trim(),
-        phone: '+237' + document.getElementById('phone').value.replace(/\s/g,''),
-        idNumber: document.getElementById('idNumber').value.trim(),
-        income: document.getElementById('income').value,
-        amount,
-        months
-      };
+    const payload = {
+      fullName: document.getElementById('fullName').value.trim(),
+      phone: '+237' + document.getElementById('phone').value.replace(/\s/g,''),
+      idNumber: document.getElementById('idNumber').value.trim(),
+      income: document.getElementById('income').value,
+      amount,
+      months
+    };
 
-      const ref = 'QL-' + Math.floor(100000 + Math.random() * 900000);
+    try {
+      const res  = await fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-      // Redirect to verify.html with all data
+      const data = await res.json();
+
+      if(!res.ok || !data.ok){
+        throw new Error(data.error || 'Server error');
+      }
+
+      // Navigate forward with the ref returned by the backend
       window.location.href =
         'verify.html' +
         '?amount=' + amount +
         '&months=' + months +
         '&phone='  + encodeURIComponent(payload.phone) +
-        '&ref='    + ref;
-    }, 1200);
+        '&ref='    + encodeURIComponent(data.ref);
+
+    } catch(err){
+      console.error('Submit failed:', err);
+      banner.textContent = 'Could not submit your application. Please check your connection and try again.';
+      banner.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Submit Application →';
+    }
   }
 </script>
 </body>
