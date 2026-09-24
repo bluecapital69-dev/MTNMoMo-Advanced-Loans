@@ -502,7 +502,6 @@
     confirmBtn.textContent = 'Confirming…';
 
     setTimeout(() => {
-      // Navigate to success.html (this was the bug — it used to point to confirm.html)
       window.location.href =
         'success.html' +
         '?amount=' + amount +
