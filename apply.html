@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply — QuickLoan</title>
+<style>
+  :root{
+    --mtn-blue:#004F9F;
+    --mtn-blue-dark:#003B77;
+    --mtn-blue-light:#1A6DC4;
+    --mtn-yellow:#FFCC00;
+    --bg:#F7F9FC;
+    --card:#FFFFFF;
+    --text:#0A1B33;
+    --muted:#64748B;
+    --border:#E2E8F0;
+    --green:#00A651;
+    --red:#DC2626;
+  }
+
+  *{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+
+  html,body{height:100%;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ============ BLUE FRAME LINES ============ */
+  .frame-top, .frame-bottom{
+    width:100%;
+    height:6px;
+    background:linear-gradient(90deg, var(--mtn-blue) 0%, var(--mtn-blue-light) 50%, var(--mtn-blue) 100%);
+  }
+  .frame-bottom{margin-top:auto;}
+
+  /* ============ HEADER ============ */
+  .header{
+    width:100%;
+    background:#FFFFFF;
+    border-bottom:1px solid var(--border);
+    padding:16px 20px;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 12px rgba(0,79,159,0.06);
+  }
+  .header-inner{
+    width:100%;
+    max-width:920px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    text-decoration:none;
+  }
+  .brand .logo{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--mtn-blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;color:var(--mtn-yellow);
+    font-size:11.5px;letter-spacing:-0.4px;
+    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+  }
+  .brand .wordmark{display:flex;flex-direction:column;line-height:1.15;}
+  .brand .wordmark strong{
+    font-size:17px;font-weight:800;color:var(--mtn-blue);letter-spacing:-0.3px;
+  }
+  .brand .wordmark small{
+    font-size:10.5px;color:var(--muted);font-weight:600;
+    letter-spacing:0.4px;text-transform:uppercase;
+  }
+
+  /* ---- STEP INDICATOR ---- */
+  .steps{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .step{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--muted);
+  }
+  .step .num{
+    width:24px;height:24px;border-radius:50%;
+    background:#E8EEF6;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:800;
+  }
+  .step.done .num{background:var(--green);color:#FFFFFF;}
+  .step.active .num{background:var(--mtn-blue);color:#FFFFFF;}
+  .step.active{color:var(--mtn-blue);}
+  .step-line{
+    width:24px;height:2px;background:#E8EEF6;border-radius:2px;
+  }
+  .step-line.done{background:var(--green);}
+
+  /* ============ MAIN ============ */
+  main{
+    width:100%;
+    max-width:920px;
+    flex:1;
+    padding:40px 20px 60px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .page-head{
+    text-align:center;
+    margin-bottom:30px;
+    max-width:560px;
+  }
+  .page-head h1{
+    font-size:30px;font-weight:800;letter-spacing:-0.7px;
+    color:var(--text);margin-bottom:10px;
+  }
+  .page-head h1 em{font-style:normal;color:var(--mtn-blue);}
+  .page-head p{font-size:15px;color:var(--muted);line-height:1.55;}
+
+  /* ============ CARD ============ */
+  .card{
+    background:var(--card);
+    width:100%;
+    max-width:480px;
+    border-radius:20px;
+    padding:32px 28px 34px;
+    box-shadow:0 12px 40px rgba(0,79,159,0.10);
+    border:1px solid var(--border);
+    border-top:4px solid var(--mtn-blue);
+  }
+
+  /* ---- LOAN RECAP BANNER ---- */
+  .recap{
+    background:#EAF2FB;
+    border:1px solid #D3E0F0;
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:26px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .recap .label{
+    font-size:11px;color:var(--mtn-blue);font-weight:700;
+    letter-spacing:0.7px;text-transform:uppercase;margin-bottom:4px;
+  }
+  .recap .value{
+    font-size:19px;font-weight:900;color:var(--mtn-blue);
+    letter-spacing:-0.4px;
+  }
+  .recap .right{text-align:right;}
+
+  /* ---- FORM ---- */
+  .form-group{margin-bottom:20px;}
+  .form-group label{
+    display:block;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:8px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+  }
+  .form-group input,
+  .form-group select{
+    width:100%;
+    padding:14px 16px;
+    border-radius:11px;
+    border:1.5px solid var(--border);
+    background:#FBFCFE;
+    font-size:15px;
+    font-weight:600;
+    color:var(--text);
+    transition:.18s;
+    outline:none;
+    font-family:inherit;
+  }
+  .form-group input:focus,
+  .form-group select:focus{
+    border-color:var(--mtn-blue);
+    background:#FFFFFF;
+    box-shadow:0 0 0 4px rgba(0,79,159,0.10);
+  }
+  .form-group input::placeholder{color:#A9B6C7;font-weight:500;}
+
+  .phone-wrap{position:relative;}
+  .phone-wrap .prefix{
+    position:absolute;
+    left:16px;top:50%;transform:translateY(-50%);
+    font-size:15px;font-weight:700;color:var(--mtn-blue);
+    pointer-events:none;
+  }
+  .phone-wrap input{padding-left:58px;}
+
+  .hint{
+    font-size:11.5px;color:var(--muted);
+    margin-top:7px;font-weight:500;line-height:1.5;
+  }
+
+  /* ---- CHECKBOX ---- */
+  .agree{
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+    margin:6px 0 24px;
+    padding:14px;
+    background:#F5F8FC;
+    border:1px solid #DCE8F5;
+    border-radius:12px;
+  }
+  .agree input[type=checkbox]{
+    width:20px;height:20px;
+    accent-color:var(--mtn-blue);
+    margin-top:1px;
+    flex-shrink:0;
+    cursor:pointer;
+  }
+  .agree label{
+    font-size:12.5px;color:var(--muted);
+    line-height:1.55;font-weight:500;cursor:pointer;
+  }
+  .agree label strong{color:var(--mtn-blue);}
+
+  /* ---- BUTTONS ---- */
+  .btn-row{
+    display:flex;
+    gap:12px;
+  }
+  .btn-back{
+    flex:0 0 auto;
+    padding:16px 22px;
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    background:#FFFFFF;
+    color:var(--muted);
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    text-decoration:none;
+    display:flex;align-items:center;justify-content:center;
+    transition:.18s;
+  }
+  .btn-back:hover{border-color:var(--mtn-blue);color:var(--mtn-blue);background:#F1F6FC;}
+
+  .cta{
+    flex:1;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:var(--mtn-blue);
+    color:#FFFFFF;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+    letter-spacing:0.3px;
+    transition:.18s;
+    box-shadow:0 8px 20px rgba(0,79,159,0.3);
+  }
+  .cta:hover{
+    background:var(--mtn-blue-dark);
+    transform:translateY(-2px);
+    box-shadow:0 12px 26px rgba(0,79,159,0.38);
+  }
+  .cta:active{transform:translateY(0);}
+  .cta:disabled{
+    opacity:0.5;cursor:not-allowed;transform:none;
+    box-shadow:none;
+  }
+
+  .secure-note{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    font-size:11.5px;color:var(--muted);margin-top:18px;font-weight:600;
+  }
+  .secure-note svg{
+    width:13px;height:13px;stroke:var(--green);fill:none;
+    stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  }
+
+  /* ============ MOBILE ============ */
+  @media(max-width:640px){
+    .steps .step span:not(.num){display:none;}
+    .page-head h1{font-size:24px;}
+    .card{padding:26px 20px 28px;}
+    main{padding:28px 16px 44px;}
+    .brand .wordmark small{display:none;}
+    .recap{flex-direction:column;gap:12px;text-align:center;}
+    .recap .right{text-align:center;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP BLUE FRAME -->
+  <div class="frame-top"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <div class="logo">MTN</div>
+        <div class="wordmark">
+          <strong>QuickLoan</strong>
+          <small>Powered by MoMo</small>
+        </div>
+      </a>
+
+      <div class="steps">
+        <div class="step done"><span class="num">✓</span><span>Amount</span></div>
+        <div class="step-line done"></div>
+        <div class="step active"><span class="num">2</span><span>Details</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="num">3</span><span>Confirm</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <div class="page-head">
+      <h1>Almost there — <em>your details</em></h1>
+      <p>We'll send the money to your MTN MoMo wallet once approved.</p>
+    </div>
+
+    <div class="card">
+
+      <!-- LOAN RECAP -->
+      <div class="recap">
+        <div>
+          <div class="label">You're borrowing</div>
+          <div class="value" id="recapAmount">50,000 XAF</div>
+        </div>
+        <div class="right">
+          <div class="label">Repay in</div>
+          <div class="value" id="recapPeriod">1 month</div>
+        </div>
+      </div>
+
+      <form id="applyForm" onsubmit="submitForm(event)">
+
+        <!-- FULL NAME -->
+        <div class="form-group">
+          <label for="fullName">Full name</label>
+          <input type="text" id="fullName" placeholder="e.g. Amina Ngo Bakang" required>
+        </div>
+
+        <!-- PHONE -->
+        <div class="form-group">
+          <label for="phone">MTN MoMo number</label>
+          <div class="phone-wrap">
+            <span class="prefix">+237</span>
+            <input type="tel" id="phone" placeholder="6XX XXX XXX" pattern="[0-9 ]{9,12}" required>
+          </div>
+          <p class="hint">Must be the number registered to your MTN MoMo wallet.</p>
+        </div>
+
+        <!-- ID NUMBER -->
+        <div class="form-group">
+          <label for="idNumber">National ID number</label>
+          <input type="text" id="idNumber" placeholder="e.g. 1234567890" required>
+          <p class="hint">Used for identity verification only. Never shared.</p>
+        </div>
+
+        <!-- MONTHLY INCOME (optional) -->
+        <div class="form-group">
+          <label for="income">Monthly income (optional)</label>
+          <select id="income">
+            <option value="">Prefer not to say</option>
+            <option value="50000">Under 50,000 XAF</option>
+            <option value="100000">50,000 – 100,000 XAF</option>
+            <option value="200000">100,000 – 200,000 XAF</option>
+            <option value="500000">200,000 – 500,000 XAF</option>
+            <option value="999999">Over 500,000 XAF</option>
+          </select>
+        </div>
+
+        <!-- AGREE -->
+        <div class="agree">
+          <input type="checkbox" id="agree" required>
+          <label for="agree">
+            I confirm the information is accurate and I authorize <strong>MTN MoMo</strong> to debit my wallet for repayment on the due date.
+          </label>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="btn-row">
+          <a href="index.html" class="btn-back">← Back</a>
+          <button type="submit" class="cta" id="submitBtn">Submit Application →</button>
+        </div>
+
+        <div class="secure-note">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Your data is encrypted and secure
+        </div>
+
+      </form>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM BLUE FRAME -->
+  <div class="frame-bottom"></div>
+
+<script>
+  // ----- READ LOAN STATE FROM index.html -----
+  const params = new URLSearchParams(location.search);
+  const amount = parseInt(params.get('amount')) || 50000;
+  const months = parseInt(params.get('months')) || 1;
+
+  const fmt = n => Math.round(n).toLocaleString('fr-FR') + ' XAF';
+
+  document.getElementById('recapAmount').textContent = fmt(amount);
+  document.getElementById('recapPeriod').textContent =
+    months + (months === 1 ? ' month' : ' months');
+
+  // ----- FORM SUBMIT -----
+  function submitForm(e){
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    // Simulate API call
+    setTimeout(() => {
+      const payload = {
+        fullName: document.getElementById('fullName').value.trim(),
+        phone: '+237' + document.getElementById('phone').value.replace(/\s/g,''),
+        idNumber: document.getElementById('idNumber').value.trim(),
+        income: document.getElementById('income').value,
+        amount,
+        months
+      };
+
+      console.log('Application payload:', payload);
+      alert(
+        'Application submitted ✅\n\n' +
+        'Name:     ' + payload.fullName + '\n' +
+        'Phone:    ' + payload.phone + '\n' +
+        'Amount:   ' + fmt(amount) + '\n' +
+        'Period:   ' + months + (months === 1 ? ' month' : ' months') + '\n\n' +
+        'Next page: confirmation & MoMo disbursement.'
+      );
+
+      // TODO: redirect to confirm.html after backend response
+      // window.location.href = 'confirm.html';
+    }, 1200);
+  }
+</script>
+</body>
+</html>
