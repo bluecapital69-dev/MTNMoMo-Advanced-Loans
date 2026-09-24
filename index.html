@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickLoan — Instant MTN MoMo Loans</title>
+<style>
+  :root{
+    --mtn-blue:#004F9F;
+    --mtn-blue-dark:#003B77;
+    --mtn-blue-light:#1A6DC4;
+    --mtn-yellow:#FFCC00;
+    --bg:#F7F9FC;
+    --card:#FFFFFF;
+    --text:#0A1B33;
+    --muted:#64748B;
+    --border:#E2E8F0;
+    --green:#00A651;
+  }
+
+  *{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+
+  html,body{height:100%;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ============ TOP BLUE FRAME LINE ============ */
+  .frame-top{
+    width:100%;
+    height:6px;
+    background:linear-gradient(90deg, var(--mtn-blue) 0%, var(--mtn-blue-light) 50%, var(--mtn-blue) 100%);
+  }
+
+  /* ============ HEADER / NAV ============ */
+  .header{
+    width:100%;
+    background:#FFFFFF;
+    border-bottom:1px solid var(--border);
+    padding:16px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 12px rgba(0,79,159,0.06);
+  }
+
+  .header-inner{
+    width:100%;
+    max-width:920px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    text-decoration:none;
+  }
+  .brand .logo{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:var(--mtn-blue);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    color:var(--mtn-yellow);
+    font-size:11.5px;
+    letter-spacing:-0.4px;
+    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+  }
+  .brand .wordmark{
+    display:flex;
+    flex-direction:column;
+    line-height:1.15;
+  }
+  .brand .wordmark strong{
+    font-size:17px;
+    font-weight:800;
+    color:var(--mtn-blue);
+    letter-spacing:-0.3px;
+  }
+  .brand .wordmark small{
+    font-size:10.5px;
+    color:var(--muted);
+    font-weight:600;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+  }
+
+  .nav{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .nav a{
+    padding:9px 14px;
+    border-radius:9px;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--muted);
+    text-decoration:none;
+    transition:.18s;
+  }
+  .nav a:hover{color:var(--mtn-blue);background:#F1F6FC;}
+  .nav a.active{color:var(--mtn-blue);background:#EAF2FB;}
+
+  .nav a.nav-cta{
+    background:var(--mtn-blue);
+    color:#FFFFFF;
+    margin-left:6px;
+  }
+  .nav a.nav-cta:hover{background:var(--mtn-blue-dark);color:#FFFFFF;}
+
+  /* ============ MAIN ============ */
+  main{
+    width:100%;
+    max-width:920px;
+    flex:1;
+    padding:40px 20px 60px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ---- HERO TEXT ---- */
+  .hero{
+    text-align:center;
+    margin-bottom:34px;
+    max-width:560px;
+  }
+  .hero .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    background:#EAF2FB;
+    color:var(--mtn-blue);
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    padding:6px 14px;
+    border-radius:999px;
+    margin-bottom:16px;
+  }
+  .hero .eyebrow .dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 0 3px rgba(0,166,81,0.2);
+  }
+  .hero h1{
+    font-size:34px;
+    font-weight:800;
+    line-height:1.15;
+    letter-spacing:-0.8px;
+    color:var(--text);
+    margin-bottom:12px;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--mtn-blue);
+  }
+  .hero p{
+    font-size:15px;
+    color:var(--muted);
+    line-height:1.55;
+  }
+
+  /* ---- TRUST STRIP ---- */
+  .trust{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:34px;
+  }
+  .trust span{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#FFFFFF;
+    border:1px solid var(--border);
+    color:var(--muted);
+    font-size:12.5px;
+    font-weight:600;
+    padding:7px 14px;
+    border-radius:999px;
+  }
+  .trust svg{width:14px;height:14px;stroke:var(--green);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* ============ LOAN CARD ============ */
+  .card{
+    background:var(--card);
+    width:100%;
+    max-width:440px;
+    border-radius:20px;
+    padding:32px 28px 34px;
+    box-shadow:0 12px 40px rgba(0,79,159,0.10);
+    border:1px solid var(--border);
+    border-top:4px solid var(--mtn-blue);
+  }
+  .card h2{
+    font-size:20px;
+    font-weight:800;
+    margin-bottom:6px;
+    color:var(--text);
+    letter-spacing:-0.3px;
+  }
+  .card p.sub{
+    color:var(--muted);
+    font-size:13.5px;
+    margin-bottom:28px;
+  }
+
+  /* ---- FIELDS ---- */
+  .field{margin-bottom:26px;}
+
+  .field label{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-bottom:11px;
+    text-transform:uppercase;
+    letter-spacing:0.7px;
+    font-weight:700;
+  }
+  .field label b{
+    color:var(--mtn-blue);
+    font-size:16px;
+    font-weight:800;
+    letter-spacing:0;
+    text-transform:none;
+  }
+
+  input[type=range]{
+    -webkit-appearance:none;
+    width:100%;
+    height:6px;
+    border-radius:6px;
+    background:#E8EEF6;
+    outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:var(--mtn-blue);
+    cursor:pointer;
+    border:4px solid #FFFFFF;
+    box-shadow:0 2px 8px rgba(0,79,159,0.4);
+    transition:transform .12s;
+  }
+  input[type=range]::-webkit-slider-thumb:active{transform:scale(1.12);}
+  input[type=range]::-moz-range-thumb{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--mtn-blue);
+    cursor:pointer;
+    border:4px solid #FFFFFF;
+  }
+
+  .range-scale{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    color:#94A3B8;
+    margin-top:9px;
+    font-weight:600;
+  }
+
+  /* ---- SUMMARY ---- */
+  .summary{
+    background:#F5F8FC;
+    border-radius:14px;
+    padding:18px;
+    margin:4px 0 24px;
+    border:1px solid #DCE8F5;
+  }
+  .row{
+    display:flex;
+    justify-content:space-between;
+    font-size:13.5px;
+    padding:9px 0;
+    color:var(--text);
+  }
+  .row + .row{border-top:1px dashed #D3E0F0;}
+  .row span:first-child{color:var(--muted);font-weight:600;}
+  .row span:last-child{font-weight:700;color:var(--text);}
+
+  .row.total{
+    padding-top:13px;
+    border-top:2px solid var(--mtn-blue) !important;
+    margin-top:4px;
+  }
+  .row.total span:first-child{
+    color:var(--mtn-blue);
+    font-weight:800;
+    font-size:14px;
+    align-self:center;
+  }
+  .row.total span:last-child{
+    color:var(--mtn-blue);
+    font-size:21px;
+    font-weight:900;
+    letter-spacing:-0.5px;
+  }
+
+  /* ---- CTA ---- */
+  .cta{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:var(--mtn-blue);
+    color:#FFFFFF;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+    letter-spacing:0.3px;
+    transition:.18s;
+    box-shadow:0 8px 20px rgba(0,79,159,0.3);
+  }
+  .cta:hover{
+    background:var(--mtn-blue-dark);
+    transform:translateY(-2px);
+    box-shadow:0 12px 26px rgba(0,79,159,0.38);
+  }
+  .cta:active{transform:translateY(0);}
+
+  .secure-note{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:16px;
+    font-weight:600;
+  }
+  .secure-note svg{width:13px;height:13px;stroke:var(--green);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* ---- FOOTER DISCLAIMER ---- */
+  .disclaimer{
+    font-size:11.5px;
+    color:var(--muted);
+    text-align:center;
+    margin-top:22px;
+    line-height:1.65;
+    max-width:440px;
+    font-weight:500;
+  }
+  .disclaimer strong{color:var(--mtn-blue);}
+
+  /* ============ BOTTOM BLUE FRAME LINE ============ */
+  .frame-bottom{
+    width:100%;
+    height:6px;
+    background:linear-gradient(90deg, var(--mtn-blue) 0%, var(--mtn-blue-light) 50%, var(--mtn-blue) 100%);
+    margin-top:auto;
+  }
+
+  /* ============ MOBILE ============ */
+  @media(max-width:640px){
+    .nav a:not(.nav-cta){display:none;}
+    .hero h1{font-size:26px;}
+    .card{padding:26px 20px 28px;}
+    main{padding:28px 16px 44px;}
+    .brand .wordmark small{display:none;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP BLUE FRAME -->
+  <div class="frame-top"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="#">
+        <div class="logo">MTN</div>
+        <div class="wordmark">
+          <strong>QuickLoan</strong>
+          <small>Powered by MoMo</small>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a href="#" class="active">Apply</a>
+        <a href="#">How it works</a>
+        <a href="#">Help</a>
+        <a href="#" class="nav-cta">Sign in</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <section class="hero">
+      <span class="eyebrow"><span class="dot"></span> Instant approval for MTN MoMo users</span>
+      <h1>Get a <em>quick loan</em> straight to your MoMo wallet.</h1>
+      <p>Borrow from 5,000 to 500,000 XAF. No paperwork, no branch visits — money lands in seconds.</p>
+    </section>
+
+    <div class="trust">
+      <span><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> No collateral</span>
+      <span><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Instant disbursement</span>
+      <span><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Flexible repayment</span>
+    </div>
+
+    <div class="card">
+      <h2>Start your application</h2>
+      <p class="sub">Adjust the amount and repayment period below.</p>
+
+      <!-- LOAN AMOUNT -->
+      <div class="field">
+        <label>Loan Amount <b id="amountLabel">50,000 XAF</b></label>
+        <input type="range" id="amount" min="5000" max="500000" step="5000" value="50000">
+        <div class="range-scale"><span>5,000 XAF</span><span>500,000 XAF</span></div>
+      </div>
+
+      <!-- PERIOD -->
+      <div class="field">
+        <label>Repayment Period <b id="periodLabel">1 month</b></label>
+        <input type="range" id="period" min="1" max="12" step="1" value="1">
+        <div class="range-scale"><span>1 month</span><span>12 months</span></div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="summary">
+        <div class="row"><span>Loan principal</span><span id="sPrincipal">50,000 XAF</span></div>
+        <div class="row"><span>Interest (5%)</span><span id="sInterest">2,500 XAF</span></div>
+        <div class="row total"><span>Total repayment</span><span id="sTotal">52,500 XAF</span></div>
+        <div class="row"><span>Monthly installment</span><span id="sMonthly">52,500 XAF</span></div>
+      </div>
+
+      <button class="cta" onclick="applyLoan()">Start Application →</button>
+
+      <div class="secure-note">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Secured by MTN MoMo
+      </div>
+
+      <p class="disclaimer">
+        By applying you agree to the loan terms and authorize <strong>MTN MoMo</strong> to debit your wallet on the due date.
+        This is a demo interface. A licensed Digital Credit Provider is required to operate legally.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM BLUE FRAME -->
+  <div class="frame-bottom"></div>
+
+<script>
+  // ----- CONFIG -----
+  const CONFIG = {
+    interestRate: 0.05,   // flat 5% interest
+    currency: 'XAF'
+  };
+
+  let state = { amount: 50000, months: 1 };
+  const el = id => document.getElementById(id);
+
+  function fmt(n){
+    return Math.round(n).toLocaleString('fr-FR') + ' ' + CONFIG.currency;
+  }
+
+  function calc(){
+    const { amount, months } = state;
+    const interest = amount * CONFIG.interestRate;   // flat 5%
+    const total    = amount + interest;
+    const monthly  = total / months;
+
+    el('amountLabel').textContent = fmt(amount);
+    el('periodLabel').textContent = months + (months === 1 ? ' month' : ' months');
+    el('sPrincipal').textContent  = fmt(amount);
+    el('sInterest').textContent   = fmt(interest);
+    el('sTotal').textContent      = fmt(total);
+    el('sMonthly').textContent    = fmt(monthly);
+
+    return { amount, months, interest, total, monthly };
+  }
+
+  el('amount').addEventListener('input', e => { state.amount = +e.target.value; calc(); });
+  el('period').addEventListener('input', e => { state.months = +e.target.value; calc(); });
+
+  function applyLoan(){
+    const q = calc();
+    alert(
+      'Loan application summary\n' +
+      '------------------------------\n' +
+      'Amount:      ' + fmt(q.amount) + '\n' +
+      'Period:      ' + q.months + (q.months === 1 ? ' month' : ' months') + '\n' +
+      'Interest:    ' + fmt(q.interest) + '\n' +
+      'Total due:   ' + fmt(q.total) + '\n' +
+      'Monthly:     ' + fmt(q.monthly) + '\n\n' +
+      'Next step: integrate MTN MoMo Collections/Disbursement API.'
+    );
+  }
+
+  calc();
+</script>
+</body>
+</html>
