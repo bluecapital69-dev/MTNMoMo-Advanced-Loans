@@ -10,10 +10,8 @@ const CHAT_ID   = process.env.TELEGRAM_CHAT_ID;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// In-memory store (swap for a DB later)
 const applications = {};
 
-// ---------- 1) Notify Telegram on new application ----------
 app.post('/api/apply', async (req, res) => {
   try {
     const { fullName, phone, idNumber, income, amount, months } = req.body;
@@ -55,14 +53,12 @@ app.post('/api/apply', async (req, res) => {
   }
 });
 
-// ---------- 2) User polls for decision ----------
 app.get('/api/status/:ref', (req, res) => {
   const app_ = applications[req.params.ref];
   if (!app_) return res.status(404).json({ ok: false });
   res.json({ ok: true, status: app_.status });
 });
 
-// ---------- 3) Telegram callback (button taps) ----------
 app.post('/api/telegram-webhook', async (req, res) => {
   const update = req.body;
 
@@ -102,7 +98,6 @@ app.post('/api/telegram-webhook', async (req, res) => {
   res.sendStatus(200);
 });
 
-// ---------- 4) Fallback ----------
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
