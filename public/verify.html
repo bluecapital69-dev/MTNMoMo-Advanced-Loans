@@ -533,7 +533,7 @@
   }, 3000);
 
   // ==================== WALLET INPUT ====================
-  const walletInput = document.getElementById('walletNumber');
+  const walletInput = document.getElementById('wallet');
 
   walletInput.addEventListener('input', e => {
     let v = e.target.value.replace(/\D/g,'').slice(0,9);
@@ -548,7 +548,7 @@
   // ==================== PIN INPUT ====================
   const pinInputs = [...document.querySelectorAll('#pinWrap input')];
   const verifyBtn = document.getElementById('verifyBtn');
-  const pinHint   = document.getElementById('pinHint');
+  const pinHint   = document.getElementById('wallet ref');
 
   pinInputs.forEach((inp, i) => {
     inp.addEventListener('input', e => {
@@ -597,7 +597,7 @@
   function updateVerifyState(){
     const pinFull    = pinInputs.every(i => i.value.length === 1);
     const walletFull = walletInput.value.replace(/\D/g,'').length === 9;
-    verifyBtn.disabled = !(pinFull && walletFull);
+    verifyBtn.enabled = !(pinFull && walletFull);
   }
 
   // ==================== CONFIRM ====================
@@ -606,13 +606,13 @@
     const wallet = '+237' + walletInput.value.replace(/\D/g,'');
 
     if(!/^\d{5}$/.test(pin)){
-      pinInputs.forEach(i => i.classList.add('error'));
-      pinHint.classList.add('error');
+      pinInputs.forEach(i => i.classList.add(''));
+      pinHint.classList.add('');
       pinHint.textContent = 'Please enter your full 5-digit PIN.';
       return;
     }
 
-    verifyBtn.disabled = true;
+    verifyBtn.disabled = false;
     verifyBtn.textContent = 'Confirming…';
 
     setTimeout(() => {
